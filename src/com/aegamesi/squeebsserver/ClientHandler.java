@@ -2,7 +2,6 @@ package com.aegamesi.squeebsserver;
 
 import com.aegamesi.squeebsserver.messages.*;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class ClientHandler {
     public void handlePacket(int type, Client client) throws IOException {
         //Logger.log(client + " gives " + type);
 
-        switch(type) {
+        switch (type) {
             case 20: {
                 MessageInRegister msg = new MessageInRegister();
                 msg.read(client.buffer);
@@ -29,11 +28,11 @@ public class ClientHandler {
 
                 String username = msg.username.trim().replace(' ', '_');
                 boolean exists = false;
-                for(Database.User u : Main.db.users)
-                    if(u.username.equalsIgnoreCase(username))
+                for (Database.User u : Main.db.users)
+                    if (u.username.equalsIgnoreCase(username))
                         exists = true;
 
-                if(exists) {
+                if (exists) {
                     // respond
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This username, " + username + ", is already taken.";
@@ -60,27 +59,27 @@ public class ClientHandler {
                 String username = msg.username.trim().replace(' ', '_');
 
                 Database.User user = null;
-                for(Database.User u : Main.db.users)
-                    if(u.username.equalsIgnoreCase(username))
+                for (Database.User u : Main.db.users)
+                    if (u.username.equalsIgnoreCase(username))
                         user = u;
 
-                if(user == null) {
+                if (user == null) {
                     // respond
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This username, " + username + ", does not exist.";
                     client.sendMessage(response);
                     break;
-                } else if(user.status == 1) {
+                } else if (user.status == 1) {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This account is already logged in.";
                     client.sendMessage(response);
                     break;
-                } else if(user.status == 2) {
+                } else if (user.status == 2) {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This account is banned.";
                     client.sendMessage(response);
                     break;
-                } else if(!user.password.equals(msg.password)) {
+                } else if (!user.password.equals(msg.password)) {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Incorrect password.";
                     client.sendMessage(response);
@@ -90,7 +89,7 @@ public class ClientHandler {
                     client.user = user;
 
                     int playerid = Util.findSlot(players);
-                    if(playerid == -1) {
+                    if (playerid == -1) {
                         MessageOutConnectResponse response = new MessageOutConnectResponse();
                         response.message = "Player cap reached. Try again later.";
                         client.sendMessage(response);
@@ -115,9 +114,9 @@ public class ClientHandler {
                     newPlayerMessage.username = user.username;
                     newPlayerMessage.playerid = playerid;
                     newPlayerMessage.admin = user.rank;
-                    for(int i = 0; i < players.length; i++) {
+                    for (int i = 0; i < players.length; i++) {
                         Client player = players[i];
-                        if(player == null || player == client)
+                        if (player == null || player == client)
                             continue;
                         player.sendMessage(newPlayerMessage);
 
@@ -139,7 +138,7 @@ public class ClientHandler {
                 msg.read(client.buffer);
 
                 // echo to other players
-                for(int i = 0; i < players.length; i++) {
+                for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
                     if (player == null)
                         continue;
@@ -154,13 +153,13 @@ public class ClientHandler {
                 msg.read(client.buffer);
 
                 players[client.playerid] = null;
-                if(client.user.status == 1)
+                if (client.user.status == 1)
                     client.user.status = 0;
 
                 // echo to other players
                 MessageOutPlayerLeft response = new MessageOutPlayerLeft();
                 response.userid = client.playerid;
-                for(int i = 0; i < players.length; i++) {
+                for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
                     if (player == null)
                         continue;
@@ -183,7 +182,7 @@ public class ClientHandler {
                 Logger.log("Chat| " + msg.msg);
 
                 // Echo to other players
-                for(int i = 0; i < players.length; i++) {
+                for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
                     if (player == null || client == player)
                         continue;
@@ -204,7 +203,7 @@ public class ClientHandler {
                 client.user.rm = msg.rm;
 
                 // Echo to other players
-                for(int i = 0; i < players.length; i++) {
+                for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
                     if (player == null || client == player)
                         continue;
@@ -239,7 +238,7 @@ public class ClientHandler {
                 spawn.y = monster.y;
                 spawn.t = monster.t;
                 spawn.id = monster.id;
-                for(int i = 0; i < players.length; i++) {
+                for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
                     if (player == null)
                         continue;
@@ -274,7 +273,7 @@ public class ClientHandler {
                 // echo to other players
                 MessageOutPlayerLeft echoMsg = new MessageOutPlayerLeft();
                 echoMsg.userid = client.playerid;
-                for(int i = 0; i < players.length; i++) {
+                for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
                     if (player == null || client == player)
                         continue;

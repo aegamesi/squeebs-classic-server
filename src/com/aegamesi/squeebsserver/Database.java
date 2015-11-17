@@ -84,7 +84,7 @@ public class Database {
             silver = b.getShort();
             bronze = b.getShort();
 
-            for(int i = 0; i < 68; i++) {
+            for (int i = 0; i < 68; i++) {
                 item_ids[i] = b.getShort();
                 item_counts[i] = b.getShort();
             }
@@ -115,9 +115,9 @@ public class Database {
             b.putShort((short) silver);
             b.putShort((short) bronze);
 
-            for(int i = 0; i < 68; i++) {
-                b.putShort((short)item_ids[i]);
-                b.putShort((short)item_counts[i]);
+            for (int i = 0; i < 68; i++) {
+                b.putShort((short) item_ids[i]);
+                b.putShort((short) item_counts[i]);
             }
 
             b.put((byte) vary);

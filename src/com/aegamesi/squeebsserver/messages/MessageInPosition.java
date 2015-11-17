@@ -20,7 +20,7 @@ public class MessageInPosition extends Message {
     }
 
     @Override
-    public void write(ByteBuffer b) throws IOException{
+    public void write(ByteBuffer b) throws IOException {
         b.put((byte) userid);
         b.putShort((short) x);
         b.putShort((short) y);

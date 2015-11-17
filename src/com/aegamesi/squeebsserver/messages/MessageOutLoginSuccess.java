@@ -21,7 +21,7 @@ public class MessageOutLoginSuccess extends Message {
     }
 
     @Override
-    public void read(ByteBuffer b) throws IOException{
+    public void read(ByteBuffer b) throws IOException {
         message = getString(b);
         user = new Database.User();
         user.read(b);

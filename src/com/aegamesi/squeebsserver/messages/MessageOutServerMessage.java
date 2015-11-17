@@ -14,6 +14,13 @@ public class MessageOutServerMessage extends Message {
         type = 9;
     }
 
+    public static MessageOutServerMessage build(String str, Color color) {
+        MessageOutServerMessage msg = new MessageOutServerMessage();
+        msg.msg = str;
+        msg.color = Util.colorToGM(color);
+        return msg;
+    }
+
     @Override
     public void write(ByteBuffer b) throws IOException {
         Message.putString(b, msg);
@@ -24,12 +31,5 @@ public class MessageOutServerMessage extends Message {
     public void read(ByteBuffer b) throws IOException {
         msg = Message.getString(b);
         color = b.getInt();
-    }
-
-    public static MessageOutServerMessage build(String str, Color color) {
-        MessageOutServerMessage msg = new MessageOutServerMessage();
-        msg.msg = str;
-        msg.color = Util.colorToGM(color);
-        return msg;
     }
 }

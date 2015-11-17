@@ -13,7 +13,7 @@ public class MessageInQuit extends Message {
     }
 
     @Override
-    public void write(ByteBuffer b) throws IOException{
+    public void write(ByteBuffer b) throws IOException {
         b.put((byte) userid);
         Message.putString(b, username);
     }

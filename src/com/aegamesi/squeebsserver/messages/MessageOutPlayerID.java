@@ -12,7 +12,7 @@ public class MessageOutPlayerID extends Message {
     }
 
     @Override
-    public void write(ByteBuffer b) throws IOException{
+    public void write(ByteBuffer b) throws IOException {
         b.put((byte) playerid);
     }
 

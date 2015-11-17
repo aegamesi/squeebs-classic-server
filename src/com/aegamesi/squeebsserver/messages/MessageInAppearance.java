@@ -21,7 +21,7 @@ public class MessageInAppearance extends Message {
     }
 
     @Override
-    public void write(ByteBuffer b) throws IOException{
+    public void write(ByteBuffer b) throws IOException {
         b.put((byte) userid);
         b.putShort((short) weaponsprite);
         b.putShort((short) hairsprite);

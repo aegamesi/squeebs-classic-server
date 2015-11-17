@@ -14,7 +14,7 @@ public class MessageOutNewPlayer extends Message {
     }
 
     @Override
-    public void write(ByteBuffer b) throws IOException{
+    public void write(ByteBuffer b) throws IOException {
         b.put((byte) playerid);
         Message.putString(b, username);
         b.put((byte) admin);

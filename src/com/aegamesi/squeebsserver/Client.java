@@ -4,7 +4,9 @@ import com.aegamesi.squeebsserver.messages.Message;
 import com.macfaq.io.LittleEndianInputStream;
 import com.macfaq.io.LittleEndianOutputStream;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -17,8 +19,8 @@ public class Client extends Thread {
     public ByteBuffer buffer;
 
     public Database.User user = null;
-    private boolean running = true;
     public int playerid = -1;
+    private boolean running = true;
 
     public Client(ClientHandler handler, Socket socket) {
         this.socket = socket;
@@ -36,7 +38,7 @@ public class Client extends Thread {
     }
 
     public void run() {
-        while(Main.running && running) {
+        while (Main.running && running) {
             try {
                 int messageSize = is.readUnsignedShort();
                 int packetType = is.readUnsignedByte();
@@ -48,17 +50,17 @@ public class Client extends Thread {
                 buffer.position(0);
                 handler.handlePacket(packetType, this);
 
-            } catch(IOException e) {
+            } catch (IOException e) {
                 try {
                     socket.close();
-                } catch(IOException e1) {
+                } catch (IOException e1) {
                 }
             }
         }
         Logger.log(this + " has disconnected.");
     }
 
-    public void sendMessage(Message m) throws  IOException {
+    public void sendMessage(Message m) throws IOException {
         Logger.log("Sending message " + m.type);
 
         buffer.clear();
@@ -72,7 +74,7 @@ public class Client extends Thread {
 
     @Override
     public String toString() {
-        if(user == null) {
+        if (user == null) {
             return "[Unk. Client " + socket.getInetAddress() + "]";
         } else {
             return "[User " + user.username + "]";
@@ -83,7 +85,7 @@ public class Client extends Thread {
         running = false;
         try {
             socket.close();
-        } catch(IOException e) {
+        } catch (IOException e) {
 
         }
     }

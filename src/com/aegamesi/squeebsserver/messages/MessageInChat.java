@@ -12,7 +12,7 @@ public class MessageInChat extends Message {
     }
 
     @Override
-    public void write(ByteBuffer b) throws IOException{
+    public void write(ByteBuffer b) throws IOException {
         Message.putString(b, msg);
     }
 

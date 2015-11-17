@@ -11,6 +11,9 @@ public class Main {
 
     public static boolean running = true;
     public static Database db = new Database();
+    public static ClientHandler clientHandler;
+    public static PhysicsLoop physicsLoop;
+    public static InputLoop inputLoop;
 
     public static void main(String[] args) {
         Logger.log("Starting up Squeebs Java Server...");
@@ -24,17 +27,21 @@ public class Main {
             db.users.add(user);
         }
 
-        ClientHandler clientHandler = new ClientHandler();
+        clientHandler = new ClientHandler();
         Logger.log("There are " + db.users.size() + " users.");
 
         // physloop
-        PhysicsLoop physicsLoop = new PhysicsLoop(clientHandler);
+        physicsLoop = new PhysicsLoop();
         physicsLoop.start();
 
-        try(ServerSocket serverSocket = new ServerSocket(PORT)) {
+        // input loop
+        inputLoop = new InputLoop();
+        inputLoop.start();
+
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             Logger.log("Listening on port " + PORT);
 
-            while(running) {
+            while (running) {
                 Socket socket = serverSocket.accept();
                 Logger.log("Accepted connection from " + socket.getInetAddress());
                 clientHandler.handleNewClient(socket);

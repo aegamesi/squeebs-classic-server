@@ -17,7 +17,7 @@ public class MessageInSpawnMonster extends Message {
     }
 
     @Override
-    public void write(ByteBuffer b) throws IOException{
+    public void write(ByteBuffer b) throws IOException {
         b.putShort((short) x);
         b.putShort((short) y);
         b.putShort((short) t);

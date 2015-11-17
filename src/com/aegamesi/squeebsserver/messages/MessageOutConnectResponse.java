@@ -1,9 +1,6 @@
 package com.aegamesi.squeebsserver.messages;
 
 
-import com.macfaq.io.LittleEndianInputStream;
-import com.macfaq.io.LittleEndianOutputStream;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -20,7 +17,7 @@ public class MessageOutConnectResponse extends Message {
     }
 
     @Override
-    public void read(ByteBuffer b) throws IOException{
+    public void read(ByteBuffer b) throws IOException {
         message = getString(b);
     }
 }

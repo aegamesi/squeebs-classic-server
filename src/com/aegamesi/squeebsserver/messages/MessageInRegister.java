@@ -1,9 +1,6 @@
 package com.aegamesi.squeebsserver.messages;
 
 
-import com.macfaq.io.LittleEndianInputStream;
-import com.macfaq.io.LittleEndianOutputStream;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -17,7 +14,7 @@ public class MessageInRegister extends Message {
     }
 
     @Override
-    public void write(ByteBuffer b) throws IOException{
+    public void write(ByteBuffer b) throws IOException {
         putString(b, username);
         putString(b, password);
         b.put((byte) version);

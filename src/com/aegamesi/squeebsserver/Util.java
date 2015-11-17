@@ -12,8 +12,8 @@ public class Util {
     }
 
     public static int findSlot(Object[] arr) {
-        for(int i = 0; i < arr.length; i++)
-            if(arr[i] == null)
+        for (int i = 0; i < arr.length; i++)
+            if (arr[i] == null)
                 return i;
         return -1;
     }
