@@ -4,12 +4,12 @@ package com.aegamesi.squeebsserver.messages;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class MessageNewPlayer extends Message {
+public class MessageOutNewPlayer extends Message {
     public int playerid;
     public String username;
     public int admin;
 
-    public MessageNewPlayer() {
+    public MessageOutNewPlayer() {
         type = 3;
     }
 

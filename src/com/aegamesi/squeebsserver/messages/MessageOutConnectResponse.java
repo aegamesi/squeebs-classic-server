@@ -7,10 +7,10 @@ import com.macfaq.io.LittleEndianOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class MessageLoginResponseMessage extends Message {
+public class MessageOutConnectResponse extends Message {
     public String message;
 
-    public MessageLoginResponseMessage() {
+    public MessageOutConnectResponse() {
         type = 22; // same as 23
     }
 

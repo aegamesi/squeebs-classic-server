@@ -4,7 +4,7 @@ package com.aegamesi.squeebsserver.messages;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class MessageUpdateAppearance extends Message {
+public class MessageInAppearance extends Message {
     public int userid;
     public int weaponsprite;
     public int hairsprite;
@@ -16,7 +16,7 @@ public class MessageUpdateAppearance extends Message {
     public int glovesprite;
     public int subtype;
 
-    public MessageUpdateAppearance() {
+    public MessageInAppearance() {
         type = 2;
     }
 

@@ -2,6 +2,7 @@ package com.aegamesi.squeebsserver;
 
 import com.aegamesi.squeebsserver.messages.*;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -9,9 +10,11 @@ import java.util.List;
 
 public class ClientHandler {
     public List<Client> clients;
+    public Client[] players;
 
     public ClientHandler() {
         clients = new ArrayList<>();
+        players = new Client[Main.PLAYER_MAX];
     }
 
     public void handlePacket(int type, Client client) throws IOException {
@@ -19,7 +22,7 @@ public class ClientHandler {
 
         switch(type) {
             case 20: {
-                MessageRegisterAccount msg = new MessageRegisterAccount();
+                MessageInRegister msg = new MessageInRegister();
                 msg.read(client.buffer);
 
                 // TODO validation, check if same version
@@ -32,7 +35,7 @@ public class ClientHandler {
 
                 if(exists) {
                     // respond
-                    MessageLoginResponseMessage response = new MessageLoginResponseMessage();
+                    MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This username, " + username + ", is already taken.";
                     client.sendMessage(response);
                 } else {
@@ -44,14 +47,14 @@ public class ClientHandler {
                     Logger.log("Created a new account " + username + " with password " + u.password);
 
                     // respond
-                    MessageLoginResponseMessage response = new MessageLoginResponseMessage();
+                    MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Your account, " + username + ", has been created.";
                     client.sendMessage(response);
                 }
-                break;
             }
+            break;
             case 21: {
-                MessageLoginAccount msg = new MessageLoginAccount();
+                MessageInLogin msg = new MessageInLogin();
                 msg.read(client.buffer);
 
                 String username = msg.username.trim().replace(' ', '_');
@@ -63,52 +66,65 @@ public class ClientHandler {
 
                 if(user == null) {
                     // respond
-                    MessageLoginResponseMessage response = new MessageLoginResponseMessage();
+                    MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This username, " + username + ", does not exist.";
                     client.sendMessage(response);
+                    break;
                 } else if(user.status == 1) {
-                    MessageLoginResponseMessage response = new MessageLoginResponseMessage();
+                    MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This account is already logged in.";
                     client.sendMessage(response);
+                    break;
                 } else if(user.status == 2) {
-                    MessageLoginResponseMessage response = new MessageLoginResponseMessage();
+                    MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This account is banned.";
                     client.sendMessage(response);
+                    break;
                 } else if(!user.password.equals(msg.password)) {
-                    MessageLoginResponseMessage response = new MessageLoginResponseMessage();
+                    MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Incorrect password.";
                     client.sendMessage(response);
+                    break;
                 } else {
                     user.status = 1; // set to online
                     client.user = user;
 
-                    MessageLoginValid response = new MessageLoginValid();
+                    int playerid = Util.findSlot(players);
+                    if(playerid == -1) {
+                        MessageOutConnectResponse response = new MessageOutConnectResponse();
+                        response.message = "Player cap reached. Try again later.";
+                        client.sendMessage(response);
+                        break;
+                    }
+                    Logger.log("Player " + user.username + " logged on. ID: " + playerid);
+                    client.playerid = playerid;
+                    players[client.playerid] = client;
+
+                    MessageOutLoginSuccess response = new MessageOutLoginSuccess();
                     response.message = "Welcome " + user.username + ". You have successfully logged in. Press OK to continue to the game.";
                     response.user = user;
                     client.sendMessage(response);
 
-                    // TODO better way for playerid-- otherwise they'll just get changed when a client leaves... which is very bad
-                    int playerid = clients.indexOf(client);
-
-                    MessagePlayerID pidMessage = new MessagePlayerID();
+                    MessageOutPlayerID pidMessage = new MessageOutPlayerID();
                     pidMessage.playerid = playerid;
                     client.sendMessage(pidMessage);
 
 
                     // tell all other users about this one
-                    MessageNewPlayer newPlayerMessage = new MessageNewPlayer();
+                    MessageOutNewPlayer newPlayerMessage = new MessageOutNewPlayer();
                     newPlayerMessage.username = user.username;
                     newPlayerMessage.playerid = playerid;
                     newPlayerMessage.admin = user.rank;
-                    for(Client c : clients) {
-                        if(c == client || c.playerid == -1)
+                    for(int i = 0; i < players.length; i++) {
+                        Client player = players[i];
+                        if(player == null || player == client)
                             continue;
-                        c.sendMessage(newPlayerMessage);
+                        player.sendMessage(newPlayerMessage);
 
-                        MessageNewPlayer thisPlayerMessage = new MessageNewPlayer();
-                        thisPlayerMessage.username = c.user.username;
-                        thisPlayerMessage.playerid = c.playerid;
-                        thisPlayerMessage.admin = c.user.rank;
+                        MessageOutNewPlayer thisPlayerMessage = new MessageOutNewPlayer();
+                        thisPlayerMessage.username = player.user.username;
+                        thisPlayerMessage.playerid = i;
+                        thisPlayerMessage.admin = player.user.rank;
                         client.sendMessage(thisPlayerMessage);
                     }
 
@@ -116,56 +132,171 @@ public class ClientHandler {
 
                     // TODO send items
                 }
-                break;
             }
+            break;
             case 2: {
-                MessageUpdateAppearance msg = new MessageUpdateAppearance();
+                MessageInAppearance msg = new MessageInAppearance();
                 msg.read(client.buffer);
 
                 // echo to other players
-                for(Client c : clients) {
-                    if(c == client)
+                for(int i = 0; i < players.length; i++) {
+                    Client player = players[i];
+                    if (player == null)
                         continue;
-                    if(c.user.rm == client.user.rm) {
-                        c.sendMessage(msg);
-                    }
+
+                    if (player.user.rm == client.user.rm)
+                        player.sendMessage(msg);
                 }
             }
+            break;
             case 3: {
-                MessageQuit msg = new MessageQuit();
+                MessageInQuit msg = new MessageInQuit();
                 msg.read(client.buffer);
 
+                players[client.playerid] = null;
+                if(client.user.status == 1)
+                    client.user.status = 0;
+
                 // echo to other players
-                MessagePlayerLeft response = new MessagePlayerLeft();
-                response.userid = msg.userid;
-                for(Client c : clients) {
-                    if(c.user.rm == client.user.rm) {
-                        c.sendMessage(response);
-                    }
+                MessageOutPlayerLeft response = new MessageOutPlayerLeft();
+                response.userid = client.playerid;
+                for(int i = 0; i < players.length; i++) {
+                    Client player = players[i];
+                    if (player == null)
+                        continue;
+
+                    if (player.user.rm == client.user.rm)
+                        player.sendMessage(response);
                 }
 
                 Logger.log(msg.username + " has left.");
                 client.disconnect();
                 clients.remove(client);
             }
+            break;
             case 4: {
                 // incoming chat
-                MessageIncomingChat msg = new MessageIncomingChat();
+                MessageInChat msg = new MessageInChat();
                 msg.read(client.buffer);
 
                 // TODO check for admin messages, etc.
+                Logger.log("Chat| " + msg.msg);
 
-                // echo
-                for(Client c : clients) {
-                    if(c == client)
+                // Echo to other players
+                for(int i = 0; i < players.length; i++) {
+                    Client player = players[i];
+                    if (player == null || client == player)
                         continue;
-                    c.sendMessage(msg);
+
+                    player.sendMessage(msg);
                 }
             }
+            break;
+
+            case 5: {
+                // position update
+                MessageInPosition msg = new MessageInPosition();
+                msg.read(client.buffer);
+
+                // TODO do some sort of verification...
+                client.user.x = msg.x;
+                client.user.y = msg.y;
+                client.user.rm = msg.rm;
+
+                // Echo to other players
+                for(int i = 0; i < players.length; i++) {
+                    Client player = players[i];
+                    if (player == null || client == player)
+                        continue;
+
+                    if (player.user.rm == client.user.rm)
+                        player.sendMessage(msg);
+                }
+            }
+            break;
+
+            case 6: {
+                // spawn monster
+                MessageInSpawnMonster msg = new MessageInSpawnMonster();
+                msg.read(client.buffer);
+
+                // TODO simulate monsters (obj_monster)
+
+                Database.Monster monster = new Database.Monster();
+                monster.x = msg.x;
+                monster.y = msg.y;
+                monster.t = msg.t;
+                monster.hp = msg.hp;
+                monster.m_hp = msg.hp;
+                monster.xp = msg.xp;
+                monster.rm = msg.rm;
+                monster.id = Util.findSlot(Main.db.monsters);
+                Main.db.monsters[monster.id] = monster;
+
+                // tell people
+                MessageOutSpawnMonster spawn = new MessageOutSpawnMonster();
+                spawn.x = monster.x;
+                spawn.y = monster.y;
+                spawn.t = monster.t;
+                spawn.id = monster.id;
+                for(int i = 0; i < players.length; i++) {
+                    Client player = players[i];
+                    if (player == null)
+                        continue;
+
+                    if (player.user.rm == monster.rm)
+                        player.sendMessage(spawn);
+                }
+            }
+            break;
+
+            case 7: {
+                // damage monster
+            }
+            break;
+
+            case 8: {
+                // update room
+                // TODO run on a regular basis
+            }
+
+            case 9: {
+                // change room
+                MessageInChangeRoom msg = new MessageInChangeRoom();
+                msg.read(client.buffer);
+
+                // okay, whatever
+                client.user.rm = msg.rm;
+                MessageOutChangeRoom reply = new MessageOutChangeRoom();
+                reply.rm = msg.rm;
+                client.sendMessage(reply);
+
+                // echo to other players
+                MessageOutPlayerLeft echoMsg = new MessageOutPlayerLeft();
+                echoMsg.userid = client.playerid;
+                for(int i = 0; i < players.length; i++) {
+                    Client player = players[i];
+                    if (player == null || client == player)
+                        continue;
+
+                    player.sendMessage(echoMsg);
+                }
+            }
+            break;
+
+            case 10: {
+                // save. (aka update info) -- we save on our own time.
+            }
+            break;
+
             default:
                 Logger.log("Unknown message type: " + type);
                 break;
         }
+    }
+
+    public void hackAttempt(Client c) {
+        Logger.log("Hack attempt from " + c);
     }
 
     public void handleNewClient(Socket socket) {

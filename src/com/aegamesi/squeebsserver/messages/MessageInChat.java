@@ -4,20 +4,20 @@ package com.aegamesi.squeebsserver.messages;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class MessagePlayerID extends Message {
-    public int playerid;
+public class MessageInChat extends Message {
+    public String msg;
 
-    public MessagePlayerID() {
-        type = 1;
+    public MessageInChat() {
+        type = 8;
     }
 
     @Override
     public void write(ByteBuffer b) throws IOException{
-        b.put((byte) playerid);
+        Message.putString(b, msg);
     }
 
     @Override
     public void read(ByteBuffer b) throws IOException {
-        playerid = b.get() & 0xff;
+        msg = Message.getString(b);
     }
 }

@@ -55,7 +55,7 @@ public class Client extends Thread {
                 }
             }
         }
-        Logger.log("Client " + this + " has left the server.");
+        Logger.log(this + " has disconnected.");
     }
 
     public void sendMessage(Message m) throws  IOException {

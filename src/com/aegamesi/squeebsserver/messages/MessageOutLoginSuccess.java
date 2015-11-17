@@ -6,11 +6,11 @@ import com.aegamesi.squeebsserver.Database;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class MessageLoginValid extends Message {
+public class MessageOutLoginSuccess extends Message {
     public String message;
     public Database.User user;
 
-    public MessageLoginValid() {
+    public MessageOutLoginSuccess() {
         type = 24;
     }
 

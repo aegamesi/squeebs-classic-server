@@ -8,6 +8,18 @@ import java.util.List;
 
 public class Database {
     public List<User> users = new ArrayList<>();
+    public transient Monster[] monsters = new Monster[2000];
+
+    public static class Monster {
+        public int id;
+        public int x;
+        public int y;
+        public int t;
+        public int m_hp;
+        public int hp;
+        public int xp;
+        public int rm;
+    }
 
     public static class User {
         public String username;
@@ -18,7 +30,7 @@ public class Database {
         public int x = 80;
         public int y = 80;
         public int rm = 0;
-        public int lvl = 0;
+        public int lvl = 1;
         public double xp = 0;
         public double m_xp = 5;
         public int hp = 50;
