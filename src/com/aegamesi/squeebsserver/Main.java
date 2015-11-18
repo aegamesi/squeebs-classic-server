@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Main {
+    public static final int PROTOCOL_VERSION = 3;
     public static final int PORT = 12564;
     public static final int PLAYER_MAX = 20;
     public static final int TPS = 20;

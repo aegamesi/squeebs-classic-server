@@ -20,6 +20,22 @@ public class ClientHandler {
         //Logger.log(client + " gives " + type);
 
         switch (type) {
+            case 31: {
+                MessageInHello msg = new MessageInHello();
+                msg.read(client.buffer);
+
+                if(msg.version != Main.PROTOCOL_VERSION) {
+                    MessageOutConnectResponse response = new MessageOutConnectResponse();
+                    response.message = "Your client version is out of date. Please redownload.";
+                    client.sendMessage(response);
+                    break;
+                }
+
+                MessageOutHello response = new MessageOutHello();
+                response.msg = "Welcome to the aegamesi OldSchool Squeebs Server!\nLogin and registration are now combined.";
+                client.sendMessage(response);
+            }
+            break;
             case 20: {
                 MessageInRegister msg = new MessageInRegister();
                 msg.read(client.buffer);
