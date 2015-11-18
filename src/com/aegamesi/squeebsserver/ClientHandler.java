@@ -24,7 +24,7 @@ public class ClientHandler {
                 MessageInHello msg = new MessageInHello();
                 msg.read(client.buffer);
 
-                if(msg.version != Main.PROTOCOL_VERSION) {
+                if (msg.version != Main.PROTOCOL_VERSION) {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Your client version is out of date. Please redownload.";
                     client.sendMessage(response);
@@ -36,42 +36,11 @@ public class ClientHandler {
                 client.sendMessage(response);
             }
             break;
-            case 20: {
-                MessageInRegister msg = new MessageInRegister();
-                msg.read(client.buffer);
-
-                // TODO validation, check if same version
-
-                String username = msg.username.trim().replace(' ', '_');
-                boolean exists = false;
-                for (Database.User u : Main.db.users)
-                    if (u.username.equalsIgnoreCase(username))
-                        exists = true;
-
-                if (exists) {
-                    // respond
-                    MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "This username, " + username + ", is already taken.";
-                    client.sendMessage(response);
-                } else {
-                    Database.User u = new Database.User();
-                    u.username = username;
-                    u.password = msg.password;
-                    Main.db.users.add(u);
-
-                    Logger.log("Created a new account " + username + " with password " + u.password);
-
-                    // respond
-                    MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "Your account, " + username + ", has been created.";
-                    client.sendMessage(response);
-                }
-            }
-            break;
             case 21: {
                 MessageInLogin msg = new MessageInLogin();
                 msg.read(client.buffer);
 
+                boolean newAccount = false;
                 String username = msg.username.trim().replace(' ', '_');
 
                 Database.User user = null;
@@ -80,73 +49,82 @@ public class ClientHandler {
                         user = u;
 
                 if (user == null) {
-                    // respond
-                    MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "This username, " + username + ", does not exist.";
-                    client.sendMessage(response);
-                    break;
+                    // REGISTER ACCOUNT!
+                    newAccount = true;
+                    user = new Database.User();
+                    user.username = username;
+                    user.password = msg.password;
+                    Main.db.users.add(user);
+
+                    Logger.log("Created a new account " + username + " with password " + user.password);
+                    // NO BREAK!
                 } else if (user.status == 1) {
+                    // already online
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This account is already logged in.";
                     client.sendMessage(response);
                     break;
                 } else if (user.status == 2) {
+                    // user is banned
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This account is banned.";
                     client.sendMessage(response);
                     break;
                 } else if (!user.password.equals(msg.password)) {
+                    // invalid password
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Incorrect password.";
                     client.sendMessage(response);
                     break;
-                } else {
-                    user.status = 1; // set to online
-                    client.user = user;
-
-                    int playerid = Util.findSlot(players);
-                    if (playerid == -1) {
-                        MessageOutConnectResponse response = new MessageOutConnectResponse();
-                        response.message = "Player cap reached. Try again later.";
-                        client.sendMessage(response);
-                        break;
-                    }
-                    Logger.log("Player " + user.username + " logged on. ID: " + playerid);
-                    client.playerid = playerid;
-                    players[client.playerid] = client;
-
-                    MessageOutLoginSuccess response = new MessageOutLoginSuccess();
-                    response.message = "Welcome " + user.username + ". You have successfully logged in. Press OK to continue to the game.";
-                    response.user = user;
-                    client.sendMessage(response);
-
-                    MessageOutPlayerID pidMessage = new MessageOutPlayerID();
-                    pidMessage.playerid = playerid;
-                    client.sendMessage(pidMessage);
-
-
-                    // tell all other users about this one
-                    MessageOutNewPlayer newPlayerMessage = new MessageOutNewPlayer();
-                    newPlayerMessage.username = user.username;
-                    newPlayerMessage.playerid = playerid;
-                    newPlayerMessage.admin = user.rank;
-                    for (int i = 0; i < players.length; i++) {
-                        Client player = players[i];
-                        if (player == null || player == client)
-                            continue;
-                        player.sendMessage(newPlayerMessage);
-
-                        MessageOutNewPlayer thisPlayerMessage = new MessageOutNewPlayer();
-                        thisPlayerMessage.username = player.user.username;
-                        thisPlayerMessage.playerid = i;
-                        thisPlayerMessage.admin = player.user.rank;
-                        client.sendMessage(thisPlayerMessage);
-                    }
-
-                    // TODO send monsters
-
-                    // TODO send items
                 }
+
+                user.status = 1; // set to online
+                client.user = user;
+
+                int playerid = Util.findSlot(players);
+                if (playerid == -1) {
+                    MessageOutConnectResponse response = new MessageOutConnectResponse();
+                    response.message = "Player cap reached. Try again later.";
+                    client.sendMessage(response);
+                    break;
+                }
+                Logger.log("Player " + user.username + " logged on. ID: " + playerid);
+                client.playerid = playerid;
+                players[client.playerid] = client;
+
+                MessageOutLoginSuccess response = new MessageOutLoginSuccess();
+                if (newAccount)
+                    response.message = "Welcome " + user.username + ". You have successfully registered. Have fun!";
+                else
+                    response.message = "Welcome " + user.username + ". You have successfully logged in. Have fun!";
+                response.user = user;
+                client.sendMessage(response);
+
+                MessageOutPlayerID pidMessage = new MessageOutPlayerID();
+                pidMessage.playerid = playerid;
+                client.sendMessage(pidMessage);
+
+                // tell all other users about this one
+                MessageOutNewPlayer newPlayerMessage = new MessageOutNewPlayer();
+                newPlayerMessage.username = user.username;
+                newPlayerMessage.playerid = playerid;
+                newPlayerMessage.admin = user.rank;
+                for (int i = 0; i < players.length; i++) {
+                    Client player = players[i];
+                    if (player == null || player == client)
+                        continue;
+                    player.sendMessage(newPlayerMessage);
+
+                    MessageOutNewPlayer thisPlayerMessage = new MessageOutNewPlayer();
+                    thisPlayerMessage.username = player.user.username;
+                    thisPlayerMessage.playerid = i;
+                    thisPlayerMessage.admin = player.user.rank;
+                    client.sendMessage(thisPlayerMessage);
+                }
+
+                // TODO send monsters
+
+                // TODO send items
             }
             break;
             case 2: {
