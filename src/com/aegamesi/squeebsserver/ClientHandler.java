@@ -138,6 +138,7 @@ public class ClientHandler {
             case 2: {
                 MessageInAppearance msg = new MessageInAppearance();
                 msg.read(client.buffer);
+                client.cachedAppearance = msg;
 
                 // echo to other players
                 for (int i = 0; i < players.length; i++) {
@@ -232,6 +233,7 @@ public class ClientHandler {
                 monster.xp = msg.xp;
                 monster.rm = msg.rm;
                 monster.id = Util.findSlot(Main.db.monsters);
+                monster.new_x = msg.x;
                 Main.db.monsters[monster.id] = monster;
 
                 // tell people
@@ -286,8 +288,59 @@ public class ClientHandler {
 
             case 8: {
                 // update room
-                // TODO run on a regular basis
+                MessageInUpdateRoom msg = new MessageInUpdateRoom();
+                msg.read(client.buffer);
+                client.user.rm = msg.rm;
+
+                MessageOutNewPlayer sourceNewPlayerMsg = new MessageOutNewPlayer();
+                sourceNewPlayerMsg.playerid = client.playerid;
+                sourceNewPlayerMsg.username = client.user.username;
+                sourceNewPlayerMsg.admin = client.user.rank;
+                for (int i = 0; i < players.length; i++) {
+                    Client player = players[i];
+                    if (player == null || client == player)
+                        continue;
+
+                    if (msg.rm == player.user.rm) {
+                        MessageOutNewPlayer newPlayerMsg = new MessageOutNewPlayer();
+                        newPlayerMsg.playerid = player.playerid;
+                        newPlayerMsg.admin = player.user.rank;
+                        newPlayerMsg.username = player.user.username;
+                        client.sendMessage(newPlayerMsg);
+                        client.sendMessage(player.cachedAppearance);
+                        player.sendMessage(sourceNewPlayerMsg);
+                    }
+                }
+                for(int i = 0; i < Main.db.monsters.length; i++) {
+                    Database.Monster m = Main.db.monsters[i];
+                    if (m == null)
+                        continue;
+
+                    MessageOutSpawnMonster monsterMsg = new MessageOutSpawnMonster();
+                    monsterMsg.id = i;
+                    monsterMsg.x = m.new_x;
+                    monsterMsg.y = m.y;
+                    monsterMsg.t = m.t;
+                    client.sendMessage(monsterMsg);
+                }
+
+                // TODO items
+                /*
+                with(obj_item) {
+                    clearbuffer();
+                    if rm = global.rooms[global.i] {
+                        writebyte(30)
+                        writeshort(iid)
+                        writeshort(sx)
+                        writeshort(sy)
+                        writeshort(amnt)
+                        writeshort(itemid)
+                        sendmessage(global.ctcp);
+                    }
+                }
+                */
             }
+            break;
 
             case 9: {
                 // change room
