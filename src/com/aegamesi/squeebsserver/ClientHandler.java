@@ -2,10 +2,12 @@ package com.aegamesi.squeebsserver;
 
 import com.aegamesi.squeebsserver.messages.*;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class ClientHandler {
     public List<Client> clients;
@@ -125,6 +127,12 @@ public class ClientHandler {
                 // TODO send monsters
 
                 // TODO send items
+
+                // send motd
+                client.sendMessage(MessageOutServerMessage.build(Util.motd, Color.white));
+                Random r = new Random();
+                String motd_quote = "\"" + Util.motd_quotes[r.nextInt(Util.motd_quotes.length)] + "\"";
+                client.sendMessage(MessageOutServerMessage.build(motd_quote, Color.white));
             }
             break;
             case 2: {
@@ -279,6 +287,25 @@ public class ClientHandler {
 
             case 10: {
                 // save. (aka update info) -- we save on our own time.
+            }
+            break;
+
+            case 11: {
+                // player damage
+                MessageInDamage msg = new MessageInDamage();
+                msg.read(client.buffer);
+
+                // echo to other players
+                MessageOutDamage echoMsg = new MessageOutDamage();
+                echoMsg.userid = client.playerid;
+                echoMsg.damage = msg.damage;
+                for (int i = 0; i < players.length; i++) {
+                    Client player = players[i];
+                    if (player == null || client == player)
+                        continue;
+
+                    player.sendMessage(echoMsg);
+                }
             }
             break;
 
