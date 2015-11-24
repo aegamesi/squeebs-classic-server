@@ -44,6 +44,7 @@ public class Client extends Thread {
                 int packetType = is.readUnsignedByte();
                 buffer.clear();
 
+                Main.bytes_received += messageSize + 2 + 1;
                 byte[] msg = new byte[messageSize];
                 is.read(msg);
                 buffer.put(msg);
@@ -70,6 +71,75 @@ public class Client extends Thread {
         os.writeByte(m.type);
         os.write(buffer.array(), buffer.arrayOffset(), buffer.position());
         os.flush();
+        Main.bytes_sent += buffer.position() + 2 + 1;
+    }
+
+    public void updateRoom() {
+        /*
+//Update room
+playerid = readbyte()
+global.rooms[playerid] = readshort()
+if global.players[playerid] != -1 {
+    global.i = playerid
+    global.ctcp = tcp
+    with(obj_client) {
+        clearbuffer();
+        if (id != global.players[global.i] && global.rooms[pid] = global.rooms[global.i]) {
+            writebyte(3);
+            writebyte(pid);
+            writestring(username);
+            writebyte(admin);
+            sendmessage(global.ctcp);
+            clearbuffer();
+            writebyte(2)
+            writebyte(pid);
+            writeshort(weaponsprite)
+            writeshort(hairsprite)
+            writeshort(bodysprite)
+            writeshort(amusprite)
+            writeshort(helmsprite)
+            writeshort(robesprite)
+            writeshort(sheildsprite)
+            writeshort(glovesprite)
+            writeshort(subtype)
+            sendmessage(global.ctcp);
+        }
+    }
+    with(obj_monster) {
+        clearbuffer();
+        if rm = global.rooms[global.i] {
+            writebyte(20);
+            writeshort(mid);
+            writeshort(xx);
+            writeshort(sy);
+            writeshort(t);
+            sendmessage(global.ctcp);
+        }
+    }
+    with(obj_item) {
+        clearbuffer();
+        if rm = global.rooms[global.i] {
+            writebyte(30)
+            writeshort(iid)
+            writeshort(sx)
+            writeshort(sy)
+            writeshort(amnt)
+            writeshort(itemid)
+            sendmessage(global.ctcp);
+        }
+    }
+    clearbuffer();
+    writebyte(3);
+    writebyte(pid);
+    writestring(username);
+    writebyte(admin);
+    with(obj_client) {
+        if id != global.players[global.i] && global.rooms[pid] = global.rooms[global.i] {
+            sendmessage(tcp);
+        }
+    }
+}
+         */
     }
 
     @Override

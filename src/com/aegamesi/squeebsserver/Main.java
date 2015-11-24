@@ -10,6 +10,9 @@ public class Main {
     public static final int PLAYER_MAX = 20;
     public static final int TPS = 20;
 
+    public static long bytes_sent = 0;
+    public static long bytes_received = 0;
+
     public static boolean running = true;
     public static Database db = new Database();
     public static ClientHandler clientHandler;

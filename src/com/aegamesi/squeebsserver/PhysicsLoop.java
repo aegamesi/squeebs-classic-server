@@ -8,6 +8,7 @@ import java.util.Random;
 
 public class PhysicsLoop extends Thread {
     public Random r;
+
     public PhysicsLoop() {
         r = new Random();
     }
@@ -15,7 +16,7 @@ public class PhysicsLoop extends Thread {
     @Override
     public void run() {
         while (true) {
-            float dt = 1.0f / (float)Main.TPS;
+            float dt = 1.0f / (float) Main.TPS;
 
             // do monster stuff
             for (int i = 0; i < Main.db.monsters.length; i++) {
@@ -23,10 +24,13 @@ public class PhysicsLoop extends Thread {
                 if (m == null)
                     continue;
 
+                // monster expiration
+                // TODO kill monster if ttl < 0
+                m.ttl -= dt;
+
                 // monster movement
                 m.move_timer -= dt;
-                m.ttl -= dt;
-                if(m.move_timer < 0.0f) {
+                if (m.move_timer < 0.0f) {
                     m.move_timer = 3.0f + r.nextFloat() * 3.0f;
 
                     // echo
@@ -39,17 +43,17 @@ public class PhysicsLoop extends Thread {
                             continue;
 
                         try {
-                            if(player.user.rm == m.rm) {
+                            if (player.user.rm == m.rm) {
                                 m.ttl = 60.0f;
                                 player.sendMessage(moveMsg);
                             }
-                        } catch(IOException e) {
+                        } catch (IOException e) {
                         }
                     }
                 }
 
                 // monster death
-                if(m.hp < 1) {
+                if (m.hp < 1) {
                     Main.db.monsters[i] = null;
 
                     MessageOutKillMonster killMsg = new MessageOutKillMonster();
@@ -60,9 +64,9 @@ public class PhysicsLoop extends Thread {
                             continue;
 
                         try {
-                            if(player.user.rm == m.rm)
+                            if (player.user.rm == m.rm)
                                 player.sendMessage(killMsg);
-                        } catch(IOException e) {
+                        } catch (IOException e) {
                         }
                     }
                 }

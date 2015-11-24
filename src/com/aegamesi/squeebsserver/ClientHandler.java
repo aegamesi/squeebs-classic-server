@@ -256,8 +256,8 @@ public class ClientHandler {
                 MessageInDamageMonster msg = new MessageInDamageMonster();
                 msg.read(client.buffer);
 
-                if(Main.db.monsters[msg.mid] != null) {
-                    int xp = Math.round(((float)Main.db.monsters[msg.mid].xp * ((float)msg.dmg / (float)Main.db.monsters[msg.mid].m_hp)) + 0.5f);
+                if (Main.db.monsters[msg.mid] != null) {
+                    int xp = Math.round(((float) Main.db.monsters[msg.mid].xp * ((float) msg.dmg / (float) Main.db.monsters[msg.mid].m_hp)) + 0.5f);
                     Main.db.monsters[msg.mid].hp -= msg.dmg;
                     Main.db.monsters[msg.mid].ttl = 60.0f;
 
@@ -271,7 +271,7 @@ public class ClientHandler {
                         if (player == null || client == player)
                             continue;
 
-                        if(Main.db.monsters[msg.mid].rm == player.user.rm)
+                        if (Main.db.monsters[msg.mid].rm == player.user.rm)
                             player.sendMessage(echoMsg);
                     }
 

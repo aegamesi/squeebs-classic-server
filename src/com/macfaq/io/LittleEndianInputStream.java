@@ -10,16 +10,16 @@ package com.macfaq.io;
 import java.io.*;
 
 /**
- * A little endian input stream reads two's complement,  
- * little endian integers, floating point numbers, and characters 
- * and returns them as Java primitive types. 
- * The standard java.io.DataInputStream class 
+ * A little endian input stream reads two's complement,
+ * little endian integers, floating point numbers, and characters
+ * and returns them as Java primitive types.
+ * The standard java.io.DataInputStream class
  * which this class imitates reads big-endian quantities.
  *
- * @author  Elliotte Rusty Harold
+ * @author Elliotte Rusty Harold
  * @version 1.0.3, 28 December 2002
- * @see     com.macfaq.io.LittleEndianOutputStream
- * @see     java.io.DataInputStream
+ * @see com.macfaq.io.LittleEndianOutputStream
+ * @see java.io.DataInputStream
  */
 public class LittleEndianInputStream extends FilterInputStream {
 
@@ -27,8 +27,8 @@ public class LittleEndianInputStream extends FilterInputStream {
      * Creates a new little endian input stream and chains it to the
      * input stream specified by the in argument.
      *
-     * @param   in   the underlying input stream.
-     * @see     java.io.FilterInputStream#in
+     * @param in the underlying input stream.
+     * @see java.io.FilterInputStream#in
      */
     public LittleEndianInputStream(InputStream in) {
         super(in);
@@ -39,10 +39,10 @@ public class LittleEndianInputStream extends FilterInputStream {
      * reading a single byte. If the byte is zero, false is returned.
      * If the byte is positive, true is returned.
      *
-     * @return      b   the <code>boolean</code> value read.
-     * @exception  EOFException  if the end of the underlying input stream
-     *              has been reached
-     * @exception  IOException  if the underlying stream throws an IOException.
+     * @return b   the <code>boolean</code> value read.
+     * @throws EOFException if the end of the underlying input stream
+     *                      has been reached
+     * @throws IOException  if the underlying stream throws an IOException.
      */
     public boolean readBoolean() throws IOException {
 
@@ -56,10 +56,10 @@ public class LittleEndianInputStream extends FilterInputStream {
      * Reads a signed <code>byte</code> from the underlying input stream
      * with value between -128 and 127
      *
-     * @return     the <code>byte</code> value read.
-     * @exception  EOFException  if the end of the underlying input stream
-     *              has been reached
-     * @exception  IOException  if the underlying stream throws an IOException.
+     * @return the <code>byte</code> value read.
+     * @throws EOFException if the end of the underlying input stream
+     *                      has been reached
+     * @throws IOException  if the underlying stream throws an IOException.
      */
     public byte readByte(int b) throws IOException {
 
@@ -73,10 +73,10 @@ public class LittleEndianInputStream extends FilterInputStream {
      * Reads an unsigned <code>byte</code> from the underlying
      * input stream with value between 0 and 255
      *
-     * @return     the <code>byte</code> value read.
-     * @exception  EOFException  if the end of the underlying input
-     *              stream has been reached
-     * @exception  IOException  if the underlying stream throws an IOException.
+     * @return the <code>byte</code> value read.
+     * @throws EOFException if the end of the underlying input
+     *                      stream has been reached
+     * @throws IOException  if the underlying stream throws an IOException.
      */
     public int readUnsignedByte() throws IOException {
 
@@ -90,10 +90,10 @@ public class LittleEndianInputStream extends FilterInputStream {
      * Reads a two byte signed <code>short</code> from the underlying
      * input stream in little endian order, low byte first.
      *
-     * @return     the <code>short</code> read.
-     * @exception  EOFException  if the end of the underlying input stream
-     *              has been reached
-     * @exception  IOException  if the underlying stream throws an IOException.
+     * @return the <code>short</code> read.
+     * @throws EOFException if the end of the underlying input stream
+     *                      has been reached
+     * @throws IOException  if the underlying stream throws an IOException.
      */
     public short readShort() throws IOException {
 
@@ -110,10 +110,10 @@ public class LittleEndianInputStream extends FilterInputStream {
      * Reads a two byte unsigned <code>short</code> from the underlying
      * input stream in little endian order, low byte first.
      *
-     * @return     the int value of the unsigned short read.
-     * @exception  EOFException  if the end of the underlying input stream
-     *              has been reached
-     * @exception  IOException  if the underlying stream throws an IOException.
+     * @return the int value of the unsigned short read.
+     * @throws EOFException if the end of the underlying input stream
+     *                      has been reached
+     * @throws IOException  if the underlying stream throws an IOException.
      */
     public int readUnsignedShort() throws IOException {
 
@@ -128,10 +128,10 @@ public class LittleEndianInputStream extends FilterInputStream {
      * Reads a two byte Unicode <code>char</code> from the underlying
      * input stream in little endian order, low byte first.
      *
-     * @return     the int value of the unsigned short read.
-     * @exception  EOFException  if the end of the underlying input stream
-     *              has been reached
-     * @exception  IOException  if the underlying stream throws an IOException.
+     * @return the int value of the unsigned short read.
+     * @throws EOFException if the end of the underlying input stream
+     *                      has been reached
+     * @throws IOException  if the underlying stream throws an IOException.
      */
     public char readChar() throws IOException {
 
@@ -147,10 +147,10 @@ public class LittleEndianInputStream extends FilterInputStream {
      * Reads a four byte signed <code>int</code> from the underlying
      * input stream in little endian order, low byte first.
      *
-     * @return     the <code>int</code> read.
-     * @exception  EOFException  if the end of the underlying input stream
-     *              has been reached
-     * @exception  IOException  if the underlying stream throws an IOException.
+     * @return the <code>int</code> read.
+     * @throws EOFException if the end of the underlying input stream
+     *                      has been reached
+     * @throws IOException  if the underlying stream throws an IOException.
      */
     public int readInt() throws IOException {
 
@@ -176,10 +176,10 @@ public class LittleEndianInputStream extends FilterInputStream {
      * Reads an eight byte signed <code>int</code> from the underlying
      * input stream in little endian order, low byte first.
      *
-     * @return     the <code>int</code> read.
-     * @exception  EOFException  if the end of the underlying input stream
-     *              has been reached
-     * @exception  IOException  if the underlying stream throws an IOException.
+     * @return the <code>int</code> read.
+     * @throws EOFException if the end of the underlying input stream
+     *                      has been reached
+     * @throws IOException  if the underlying stream throws an IOException.
      */
     public long readLong() throws IOException {
 
@@ -215,9 +215,9 @@ public class LittleEndianInputStream extends FilterInputStream {
      * Next this many bytes are read and decoded as UTF-8
      * encoded characters.
      *
-     * @return     the decoded string
-     * @exception  UTFDataFormatException if the string cannot be decoded
-     * @exception  IOException  if the underlying stream throws an IOException.
+     * @return the decoded string
+     * @throws UTFDataFormatException if the string cannot be decoded
+     * @throws IOException            if the underlying stream throws an IOException.
      */
     public String readUTF() throws IOException {
 
@@ -239,15 +239,13 @@ public class LittleEndianInputStream extends FilterInputStream {
             if (test < 8) {  // one byte
                 numread++;
                 result[numchars++] = (char) c1;
-            }
-            else if (test == 12 || test == 13) { // two bytes
+            } else if (test == 12 || test == 13) { // two bytes
                 numread += 2;
                 if (numread > numbytes) throw new UTFDataFormatException();
                 c2 = readUnsignedByte();
                 if ((c2 & 0xC0) != 0x80) throw new UTFDataFormatException();
                 result[numchars++] = (char) (((c1 & 0x1F) << 6) | (c2 & 0x3F));
-            }
-            else if (test == 14) { // three bytes
+            } else if (test == 14) { // three bytes
                 numread += 3;
                 if (numread > numbytes) throw new UTFDataFormatException();
                 c2 = readUnsignedByte();
@@ -257,8 +255,7 @@ public class LittleEndianInputStream extends FilterInputStream {
                 }
                 result[numchars++] = (char)
                         (((c1 & 0x0F) << 12) | ((c2 & 0x3F) << 6) | (c3 & 0x3F));
-            }
-            else { // malformed
+            } else { // malformed
                 throw new UTFDataFormatException();
             }
 
@@ -269,12 +266,11 @@ public class LittleEndianInputStream extends FilterInputStream {
     }
 
     /**
-     *
-     * @return     the next eight bytes of this input stream, interpreted as a
-     *             little endian <code>double</code>.
-     * @exception  EOFException if end of stream occurs before eight bytes
-     *             have been read.
-     * @exception  IOException   if an I/O error occurs.
+     * @return the next eight bytes of this input stream, interpreted as a
+     * little endian <code>double</code>.
+     * @throws EOFException if end of stream occurs before eight bytes
+     *                      have been read.
+     * @throws IOException  if an I/O error occurs.
      */
     public final double readDouble() throws IOException {
 
@@ -283,12 +279,11 @@ public class LittleEndianInputStream extends FilterInputStream {
     }
 
     /**
-     *
-     * @return     the next four bytes of this input stream, interpreted as a
-     *             little endian <code>int</code>.
-     * @exception  EOFException if end of stream occurs before four bytes
-     *             have been read.
-     * @exception  IOException  if an I/O error occurs.
+     * @return the next four bytes of this input stream, interpreted as a
+     * little endian <code>int</code>.
+     * @throws EOFException if end of stream occurs before four bytes
+     *                      have been read.
+     * @throws IOException  if an I/O error occurs.
      */
     public final float readFloat() throws IOException {
 
@@ -301,15 +296,15 @@ public class LittleEndianInputStream extends FilterInputStream {
      * input stream. This method blocks until all the bytes are skipped,
      * the end of the stream is detected, or an exception is thrown.
      *
-     * @param      n   the number of bytes to skip.
-     * @return     the number of bytes skipped, generally n
-     * @exception  EOFException  if this input stream reaches the end before
-     *               skipping all the bytes.
-     * @exception  IOException  if the underlying stream throws an IOException.
+     * @param n the number of bytes to skip.
+     * @return the number of bytes skipped, generally n
+     * @throws EOFException if this input stream reaches the end before
+     *                      skipping all the bytes.
+     * @throws IOException  if the underlying stream throws an IOException.
      */
     public final int skipBytes(int n) throws IOException {
 
-        for (int i = 0; i < n; i += (int) skip(n - i));
+        for (int i = 0; i < n; i += (int) skip(n - i)) ;
         return n;
 
     }
@@ -317,7 +312,7 @@ public class LittleEndianInputStream extends FilterInputStream {
     public String readString() throws IOException {
         String str = "";
         int b;
-        while((b = readUnsignedByte()) != 0)
+        while ((b = readUnsignedByte()) != 0)
             str += (char) b;
         return str;
     }
