@@ -116,6 +116,7 @@ public class ClientHandler {
                     if (player == null || player == client)
                         continue;
                     player.sendMessage(newPlayerMessage);
+                    player.sendMessage(MessageOutServerMessage.build(user.username + " has joined the server.", Color.yellow));
 
                     MessageOutNewPlayer thisPlayerMessage = new MessageOutNewPlayer();
                     thisPlayerMessage.username = player.user.username;
@@ -167,6 +168,7 @@ public class ClientHandler {
                     if (player == null)
                         continue;
 
+                    player.sendMessage(MessageOutServerMessage.build(client.user.username + " has left the server.", Color.yellow));
                     if (player.user.rm == client.user.rm)
                         player.sendMessage(response);
                 }
@@ -221,8 +223,6 @@ public class ClientHandler {
                 // spawn monster
                 MessageInSpawnMonster msg = new MessageInSpawnMonster();
                 msg.read(client.buffer);
-
-                // TODO simulate monsters (obj_monster)
 
                 Database.Monster monster = new Database.Monster();
                 monster.x = msg.x;
@@ -316,12 +316,14 @@ public class ClientHandler {
                     if (m == null)
                         continue;
 
-                    MessageOutSpawnMonster monsterMsg = new MessageOutSpawnMonster();
-                    monsterMsg.id = i;
-                    monsterMsg.x = m.new_x;
-                    monsterMsg.y = m.y;
-                    monsterMsg.t = m.t;
-                    client.sendMessage(monsterMsg);
+                    if(m.rm == msg.rm) {
+                        MessageOutSpawnMonster monsterMsg = new MessageOutSpawnMonster();
+                        monsterMsg.id = i;
+                        monsterMsg.x = m.new_x;
+                        monsterMsg.y = m.y;
+                        monsterMsg.t = m.t;
+                        client.sendMessage(monsterMsg);
+                    }
                 }
 
                 // TODO items
