@@ -253,6 +253,34 @@ public class ClientHandler {
 
             case 7: {
                 // damage monster
+                MessageInDamageMonster msg = new MessageInDamageMonster();
+                msg.read(client.buffer);
+
+                if(Main.db.monsters[msg.mid] != null) {
+                    int xp = Math.round(((float)Main.db.monsters[msg.mid].xp * ((float)msg.dmg / (float)Main.db.monsters[msg.mid].m_hp)) + 0.5f);
+                    Main.db.monsters[msg.mid].hp -= msg.dmg;
+                    Main.db.monsters[msg.mid].ttl = 60.0f;
+
+                    // echo to other players
+                    MessageOutDamageMonster echoMsg = new MessageOutDamageMonster();
+                    echoMsg.mid = msg.mid;
+                    echoMsg.dmg = msg.dmg;
+                    echoMsg.sp = msg.sp;
+                    for (int i = 0; i < players.length; i++) {
+                        Client player = players[i];
+                        if (player == null || client == player)
+                            continue;
+
+                        if(Main.db.monsters[msg.mid].rm == player.user.rm)
+                            player.sendMessage(echoMsg);
+                    }
+
+                    // send xp
+                    MessageOutMonsterXP xpMsg = new MessageOutMonsterXP();
+                    xpMsg.mid = msg.mid;
+                    xpMsg.xp = xp;
+                    client.sendMessage(xpMsg);
+                }
             }
             break;
 
@@ -286,17 +314,18 @@ public class ClientHandler {
             break;
 
             case 10: {
+                // TODO
                 // save. (aka update info) -- we save on our own time.
             }
             break;
 
             case 11: {
                 // player damage
-                MessageInDamage msg = new MessageInDamage();
+                MessageInDamagePlayer msg = new MessageInDamagePlayer();
                 msg.read(client.buffer);
 
                 // echo to other players
-                MessageOutDamage echoMsg = new MessageOutDamage();
+                MessageOutDamagePlayer echoMsg = new MessageOutDamagePlayer();
                 echoMsg.userid = client.playerid;
                 echoMsg.damage = msg.damage;
                 for (int i = 0; i < players.length; i++) {

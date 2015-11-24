@@ -19,6 +19,7 @@ public class Database {
         public int hp;
         public int xp;
         public int rm;
+        public float ttl = 60.0f;
     }
 
     public static class User {

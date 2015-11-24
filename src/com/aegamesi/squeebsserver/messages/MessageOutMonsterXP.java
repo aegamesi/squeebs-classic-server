@@ -4,23 +4,23 @@ package com.aegamesi.squeebsserver.messages;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class MessageOutDamage extends Message {
-    public int userid;
-    public int damage;
+public class MessageOutMonsterXP extends Message {
+    public int mid;
+    public int xp;
 
-    public MessageOutDamage() {
-        type = 13;
+    public MessageOutMonsterXP() {
+        type = 24;
     }
 
     @Override
     public void write(ByteBuffer b) throws IOException {
-        b.put((byte) userid);
-        b.putShort((short) damage);
+        b.putShort((short) mid);
+        b.putShort((short) xp);
     }
 
     @Override
     public void read(ByteBuffer b) throws IOException {
-        userid = b.get();
-        damage = b.getShort();
+        mid = b.getShort();
+        xp = b.getShort();
     }
 }

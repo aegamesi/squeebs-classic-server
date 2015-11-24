@@ -1,5 +1,9 @@
 package com.aegamesi.squeebsserver;
 
+import com.aegamesi.squeebsserver.messages.MessageOutKillMonster;
+
+import java.io.IOException;
+
 public class PhysicsLoop extends Thread {
 
     @Override
@@ -12,6 +16,26 @@ public class PhysicsLoop extends Thread {
                     continue;
 
                 // do whatever
+
+                // monster death
+                if(m.hp < 1) {
+                    Main.db.monsters[i] = null;
+
+                    MessageOutKillMonster killMsg = new MessageOutKillMonster();
+                    killMsg.mid = i;
+
+                    for (int j = 0; j < Main.clientHandler.players.length; j++) {
+                        Client player = Main.clientHandler.players[j];
+                        if (player == null)
+                            continue;
+
+                        try {
+                            if(player.user.rm == m.rm)
+                                player.sendMessage(killMsg);
+                        } catch(IOException e) {
+                        }
+                    }
+                }
             }
 
 

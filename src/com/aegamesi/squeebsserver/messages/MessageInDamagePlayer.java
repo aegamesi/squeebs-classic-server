@@ -4,11 +4,11 @@ package com.aegamesi.squeebsserver.messages;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class MessageInDamage extends Message {
+public class MessageInDamagePlayer extends Message {
     public int userid;
     public int damage;
 
-    public MessageInDamage() {
+    public MessageInDamagePlayer() {
         type = 11;
     }
 
