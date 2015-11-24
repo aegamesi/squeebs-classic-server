@@ -24,19 +24,16 @@ public class PhysicsLoop extends Thread {
                 if (m == null)
                     continue;
 
-                // monster expiration
-                // TODO kill monster if ttl < 0
-                m.ttl -= dt;
-
                 // monster movement
                 m.move_timer -= dt;
                 if (m.move_timer < 0.0f) {
                     m.move_timer = 3.0f + r.nextFloat() * 3.0f;
+                    m.new_x = m.x - 150 + r.nextInt(300);
 
                     // echo
                     MessageOutMoveMonster moveMsg = new MessageOutMoveMonster();
                     moveMsg.mid = i;
-                    moveMsg.new_x = m.x - 150 + r.nextInt(300);
+                    moveMsg.new_x = m.new_x;
                     for (int j = 0; j < Main.clientHandler.players.length; j++) {
                         Client player = Main.clientHandler.players[j];
                         if (player == null)
@@ -52,8 +49,9 @@ public class PhysicsLoop extends Thread {
                     }
                 }
 
-                // monster death
-                if (m.hp < 1) {
+                // monster death / expiration
+                m.ttl -= dt;
+                if (m.hp < 1 || m.ttl < 0.0f) {
                     Main.db.monsters[i] = null;
 
                     MessageOutKillMonster killMsg = new MessageOutKillMonster();

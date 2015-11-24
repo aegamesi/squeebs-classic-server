@@ -19,6 +19,7 @@ public class Database {
         public int hp;
         public int xp;
         public int rm;
+        public int new_x;
 
         public float ttl = 60.0f;
         public float move_timer = 3.0f;
