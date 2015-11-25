@@ -46,12 +46,19 @@ public class Client extends Thread {
                 int packetType = is.readUnsignedByte();
                 buffer.clear();
 
-                Main.bytes_received += messageSize + 2 + 1;
                 byte[] msg = new byte[messageSize];
-                int bytes_read = is.read(msg);
-                if(bytes_read != messageSize) {
-                    Logger.log("Warning, only read " + bytes_read + "/" + messageSize + " bytes for msg " + packetType);
+
+                int total_read = 0;
+                while(total_read < messageSize) {
+                    int just_read = is.read(msg, total_read, messageSize - total_read);
+                    if(just_read == -1) {
+                        running = false;
+                        break;
+                    }
+                    total_read += just_read;
                 }
+
+                Main.bytes_received += messageSize + 2 + 1;
                 buffer.put(msg);
                 buffer.position(0);
                 handler.handlePacket(packetType, messageSize, this);
@@ -64,6 +71,9 @@ public class Client extends Thread {
             }
         }
         Logger.log(this + " has disconnected.");
+
+        if(playerid >= 0)
+            Main.clientHandler.players[playerid] = null;
     }
 
     public void sendMessage(Message m) throws IOException {

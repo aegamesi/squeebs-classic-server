@@ -184,7 +184,7 @@ public class ClientHandler {
                 msg.read(client.buffer);
 
                 // TODO check for admin messages, etc.
-                Logger.log("Chat| " + msg.msg);
+                Logger.log(msg.msg);
 
                 // Echo to other players
                 for (int i = 0; i < players.length; i++) {
@@ -325,22 +325,21 @@ public class ClientHandler {
                         client.sendMessage(monsterMsg);
                     }
                 }
+                for(int i = 0; i < Main.db.items.length; i++) {
+                    Database.Item m = Main.db.items[i];
+                    if (m == null)
+                        continue;
 
-                // TODO items
-                /*
-                with(obj_item) {
-                    clearbuffer();
-                    if rm = global.rooms[global.i] {
-                        writebyte(30)
-                        writeshort(iid)
-                        writeshort(sx)
-                        writeshort(sy)
-                        writeshort(amnt)
-                        writeshort(itemid)
-                        sendmessage(global.ctcp);
+                    if(m.rm == msg.rm) {
+                        MessageOutCreateItem itemMsg = new MessageOutCreateItem();
+                        itemMsg.iid = i;
+                        itemMsg.x = m.x;
+                        itemMsg.y = m.y;
+                        itemMsg.amt = m.amt;
+                        itemMsg.t = m.t;
+                        client.sendMessage(itemMsg);
                     }
                 }
-                */
             }
             break;
 
@@ -369,8 +368,10 @@ public class ClientHandler {
             break;
 
             case 10: {
-                // TODO
                 // save. (aka update info) -- we save on our own time.
+                MessageInUpdatePlayer msg = new MessageInUpdatePlayer();
+                msg.user = client.user;
+                msg.read(client.buffer);
             }
             break;
 

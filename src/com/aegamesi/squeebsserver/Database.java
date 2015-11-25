@@ -77,20 +77,25 @@ public class Database {
             item_counts[3] = 1;
         }
 
-        public void read(ByteBuffer b) {
-            username = Message.getString(b);
-            rank = b.get();
+        public void read(ByteBuffer b, boolean full) {
+            if(full) {
+                username = Message.getString(b);
+                rank = b.get();
+            }
 
             x = b.getShort();
             y = b.getShort();
             rm = b.getShort();
             lvl = b.getShort();
             xp = b.getDouble();
-            m_xp = b.getDouble();
+            if(full)
+                m_xp = b.getDouble();
             hp = b.getShort();
-            m_hp = b.getShort();
+            if(full)
+                m_hp = b.getShort();
             mp = b.getShort();
-            m_mp = b.getShort();
+            if(full)
+                m_mp = b.getShort();
             str = b.getShort();
             agil = b.getShort();
             dext = b.getShort();
@@ -108,20 +113,25 @@ public class Database {
             vary = b.get();
         }
 
-        public void write(ByteBuffer b) {
-            Message.putString(b, username);
-            b.put((byte) rank);
+        public void write(ByteBuffer b, boolean full) {
+            if(full) {
+                Message.putString(b, username);
+                b.put((byte) rank);
+            }
 
             b.putShort((short) x);
             b.putShort((short) y);
             b.putShort((short) rm);
             b.putShort((short) lvl);
             b.putDouble(xp);
-            b.putDouble(m_xp);
+            if(full)
+                b.putDouble(m_xp);
             b.putShort((short) hp);
-            b.putShort((short) m_hp);
+            if(full)
+                b.putShort((short) m_hp);
             b.putShort((short) mp);
-            b.putShort((short) m_mp);
+            if(full)
+                b.putShort((short) m_mp);
             b.putShort((short) str);
             b.putShort((short) agil);
             b.putShort((short) dext);
