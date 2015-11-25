@@ -42,16 +42,19 @@ public class Client extends Thread {
     public void run() {
         while (Main.running && running) {
             try {
-                int messageSize = is.readUnsignedShort();
+                int messageSize = is.readUnsignedShort() - 1; // minus one to account for that last byte
                 int packetType = is.readUnsignedByte();
                 buffer.clear();
 
                 Main.bytes_received += messageSize + 2 + 1;
                 byte[] msg = new byte[messageSize];
-                is.read(msg);
+                int bytes_read = is.read(msg);
+                if(bytes_read != messageSize) {
+                    Logger.log("Warning, only read " + bytes_read + "/" + messageSize + " bytes for msg " + packetType);
+                }
                 buffer.put(msg);
                 buffer.position(0);
-                handler.handlePacket(packetType, this);
+                handler.handlePacket(packetType, messageSize, this);
 
             } catch (IOException e) {
                 try {
@@ -64,7 +67,7 @@ public class Client extends Thread {
     }
 
     public void sendMessage(Message m) throws IOException {
-        Logger.log("Sending message " + m.getClass().getSimpleName());
+        //Logger.log("Sending message " + m.getClass().getSimpleName());
 
         buffer.clear();
         m.write(buffer);

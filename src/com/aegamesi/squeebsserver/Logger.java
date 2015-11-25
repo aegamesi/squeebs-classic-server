@@ -13,12 +13,14 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
 
 public class Logger {
+    private static boolean headless = true;
     private static Label loggerBox;
     private static MultiWindowTextGUI gui;
     private static final int loggerSize = 19;
@@ -37,6 +39,9 @@ public class Logger {
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
         Screen screen = new TerminalScreen(terminal);
         screen.startScreen();
+        if(terminal instanceof SwingTerminal)
+            headless = false;
+
 
         // logger panel
         loggerBuffer = ".";
@@ -90,7 +95,8 @@ public class Logger {
     }
 
     public static void log(final String str) {
-        System.out.println(str);
+        if(!headless)
+            System.out.println(str);
 
         if(gui != null) {
             gui.getGUIThread().invokeLater(new Runnable() {

@@ -18,7 +18,7 @@ public class ClientHandler {
         players = new Client[Main.PLAYER_MAX];
     }
 
-    public void handlePacket(int type, Client client) throws IOException {
+    public void handlePacket(int type, int messageSize, Client client) throws IOException {
         //Logger.log(client + " gives " + type);
 
         switch (type) {
@@ -449,7 +449,7 @@ public class ClientHandler {
             break;
 
             default:
-                Logger.log("Unknown message type: " + type);
+                Logger.log("Unknown message type: " + type + " / size: " + messageSize);
                 break;
         }
     }
