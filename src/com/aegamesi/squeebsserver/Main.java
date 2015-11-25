@@ -1,5 +1,11 @@
 package com.aegamesi.squeebsserver;
 
+import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.terminal.swing.SwingTerminal;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,9 +23,11 @@ public class Main {
     public static Database db = new Database();
     public static ClientHandler clientHandler;
     public static PhysicsLoop physicsLoop;
-    public static InputLoop inputLoop;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        // setup gui
+        Logger.init();
+
         Logger.log("Starting up Squeebs Java Server...");
 
         // test accounts
@@ -39,8 +47,8 @@ public class Main {
         physicsLoop.start();
 
         // input loop
-        inputLoop = new InputLoop();
-        inputLoop.start();
+        //inputLoop = new InputLoop();
+        //inputLoop.start();
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             Logger.log("Listening on port " + PORT);
@@ -57,7 +65,7 @@ public class Main {
         }
     }
 
-    public void close() {
+    public static void close() {
         running = false;
     }
 }
