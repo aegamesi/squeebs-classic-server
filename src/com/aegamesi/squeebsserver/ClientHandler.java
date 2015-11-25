@@ -18,29 +18,29 @@ public class ClientHandler {
         players = new Client[Main.PLAYER_MAX];
     }
 
-    public void handlePacket(int type, int messageSize, Client client) throws IOException {
+    public void handlePacket(int type, int messageSize, Client sender) throws IOException {
         //Logger.log(client + " gives " + type);
 
         switch (type) {
             case 31: {
                 MessageInHello msg = new MessageInHello();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
                 if (msg.version != Main.PROTOCOL_VERSION) {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Your client version is out of date. Please redownload.";
-                    client.sendMessage(response);
+                    sender.sendMessage(response);
                     break;
                 }
 
                 MessageOutHello response = new MessageOutHello();
                 response.msg = "Welcome to the aegamesi OldSchool Squeebs Server!\nLogin and registration are now combined.";
-                client.sendMessage(response);
+                sender.sendMessage(response);
             }
             break;
             case 21: {
                 MessageInLogin msg = new MessageInLogin();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
                 boolean newAccount = false;
                 String username = msg.username.trim().replace(' ', '_');
@@ -64,35 +64,35 @@ public class ClientHandler {
                     // already online
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This account is already logged in.";
-                    client.sendMessage(response);
+                    sender.sendMessage(response);
                     break;
                 } else if (user.status == 2) {
                     // user is banned
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This account is banned.";
-                    client.sendMessage(response);
+                    sender.sendMessage(response);
                     break;
                 } else if (!user.password.equals(msg.password)) {
                     // invalid password
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Incorrect password.";
-                    client.sendMessage(response);
+                    sender.sendMessage(response);
                     break;
                 }
 
                 user.status = 1; // set to online
-                client.user = user;
+                sender.user = user;
 
                 int playerid = Util.findSlot(players);
                 if (playerid == -1) {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Player cap reached. Try again later.";
-                    client.sendMessage(response);
+                    sender.sendMessage(response);
                     break;
                 }
                 Logger.log("Player " + user.username + " logged on. ID: " + playerid);
-                client.playerid = playerid;
-                players[client.playerid] = client;
+                sender.playerid = playerid;
+                players[sender.playerid] = sender;
 
                 MessageOutLoginSuccess response = new MessageOutLoginSuccess();
                 if (newAccount)
@@ -100,46 +100,25 @@ public class ClientHandler {
                 else
                     response.message = "Welcome " + user.username + ". You have successfully logged in. Have fun!";
                 response.user = user;
-                client.sendMessage(response);
+                sender.sendMessage(response);
 
                 MessageOutPlayerID pidMessage = new MessageOutPlayerID();
                 pidMessage.playerid = playerid;
-                client.sendMessage(pidMessage);
+                sender.sendMessage(pidMessage);
 
-                // tell all other users about this one
-                MessageOutNewPlayer newPlayerMessage = new MessageOutNewPlayer();
-                newPlayerMessage.username = user.username;
-                newPlayerMessage.playerid = playerid;
-                newPlayerMessage.admin = user.rank;
-                for (int i = 0; i < players.length; i++) {
-                    Client player = players[i];
-                    if (player == null || player == client)
-                        continue;
-                    player.sendMessage(newPlayerMessage);
-                    player.sendMessage(MessageOutServerMessage.build(user.username + " has joined the server.", Color.yellow));
-
-                    MessageOutNewPlayer thisPlayerMessage = new MessageOutNewPlayer();
-                    thisPlayerMessage.username = player.user.username;
-                    thisPlayerMessage.playerid = i;
-                    thisPlayerMessage.admin = player.user.rank;
-                    client.sendMessage(thisPlayerMessage);
-                }
-
-                // TODO send monsters
-
-                // TODO send items
+                updatePlayerRoom(sender);
 
                 // send motd
-                client.sendMessage(MessageOutServerMessage.build(Util.motd, Color.white));
+                sender.sendMessage(MessageOutServerMessage.build(Util.motd, Color.white));
                 Random r = new Random();
                 String motd_quote = "\"" + Util.motd_quotes[r.nextInt(Util.motd_quotes.length)] + "\"";
-                client.sendMessage(MessageOutServerMessage.build(motd_quote, Color.white));
+                sender.sendMessage(MessageOutServerMessage.build(motd_quote, Color.white));
             }
             break;
             case 2: {
                 MessageInAppearance msg = new MessageInAppearance();
-                msg.read(client.buffer);
-                client.cachedAppearance = msg;
+                msg.read(sender.buffer);
+                sender.cachedAppearance = msg;
 
                 // echo to other players
                 for (int i = 0; i < players.length; i++) {
@@ -147,41 +126,41 @@ public class ClientHandler {
                     if (player == null)
                         continue;
 
-                    if (player.user.rm == client.user.rm)
+                    if (player.user.rm == sender.user.rm)
                         player.sendMessage(msg);
                 }
             }
             break;
             case 3: {
                 MessageInQuit msg = new MessageInQuit();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
-                players[client.playerid] = null;
-                if (client.user.status == 1)
-                    client.user.status = 0;
+                players[sender.playerid] = null;
+                if (sender.user.status == 1)
+                    sender.user.status = 0;
 
                 // echo to other players
                 MessageOutPlayerLeft response = new MessageOutPlayerLeft();
-                response.userid = client.playerid;
+                response.userid = sender.playerid;
                 for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
                     if (player == null)
                         continue;
 
-                    player.sendMessage(MessageOutServerMessage.build(client.user.username + " has left the server.", Color.yellow));
-                    if (player.user.rm == client.user.rm)
+                    player.sendMessage(MessageOutServerMessage.build(sender.user.username + " has left the server.", Color.yellow));
+                    if (player.user.rm == sender.user.rm)
                         player.sendMessage(response);
                 }
 
                 Logger.log(msg.username + " has left.");
-                client.disconnect();
-                clients.remove(client);
+                sender.disconnect();
+                clients.remove(sender);
             }
             break;
             case 4: {
                 // incoming chat
                 MessageInChat msg = new MessageInChat();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
                 // TODO check for admin messages, etc.
                 Logger.log(msg.msg);
@@ -189,7 +168,7 @@ public class ClientHandler {
                 // Echo to other players
                 for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
-                    if (player == null || client == player)
+                    if (player == null || sender == player)
                         continue;
 
                     player.sendMessage(msg);
@@ -200,20 +179,20 @@ public class ClientHandler {
             case 5: {
                 // position update
                 MessageInPosition msg = new MessageInPosition();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
                 // TODO do some sort of verification...
-                client.user.x = msg.x;
-                client.user.y = msg.y;
-                client.user.rm = msg.rm;
+                sender.user.x = msg.x;
+                sender.user.y = msg.y;
+                sender.user.rm = msg.rm;
 
                 // Echo to other players
                 for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
-                    if (player == null || client == player)
+                    if (player == null || sender == player)
                         continue;
 
-                    if (player.user.rm == client.user.rm)
+                    if (player.user.rm == sender.user.rm)
                         player.sendMessage(msg);
                 }
             }
@@ -222,7 +201,7 @@ public class ClientHandler {
             case 6: {
                 // spawn monster
                 MessageInSpawnMonster msg = new MessageInSpawnMonster();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
                 Database.Monster monster = new Database.Monster();
                 monster.x = msg.x;
@@ -256,7 +235,7 @@ public class ClientHandler {
             case 7: {
                 // damage monster
                 MessageInDamageMonster msg = new MessageInDamageMonster();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
                 if (Main.db.monsters[msg.mid] != null) {
                     int xp = Math.round(((float) Main.db.monsters[msg.mid].xp * ((float) msg.dmg / (float) Main.db.monsters[msg.mid].m_hp)) + 0.5f);
@@ -270,7 +249,7 @@ public class ClientHandler {
                     echoMsg.sp = msg.sp;
                     for (int i = 0; i < players.length; i++) {
                         Client player = players[i];
-                        if (player == null || client == player)
+                        if (player == null || sender == player)
                             continue;
 
                         if (Main.db.monsters[msg.mid].rm == player.user.rm)
@@ -281,7 +260,7 @@ public class ClientHandler {
                     MessageOutMonsterXP xpMsg = new MessageOutMonsterXP();
                     xpMsg.mid = msg.mid;
                     xpMsg.xp = xp;
-                    client.sendMessage(xpMsg);
+                    sender.sendMessage(xpMsg);
                 }
             }
             break;
@@ -289,77 +268,30 @@ public class ClientHandler {
             case 8: {
                 // update room
                 MessageInUpdateRoom msg = new MessageInUpdateRoom();
-                msg.read(client.buffer);
-                client.user.rm = msg.rm;
+                msg.read(sender.buffer);
+                sender.user.rm = msg.rm;
 
-                MessageOutNewPlayer sourceNewPlayerMsg = new MessageOutNewPlayer();
-                sourceNewPlayerMsg.playerid = client.playerid;
-                sourceNewPlayerMsg.username = client.user.username;
-                sourceNewPlayerMsg.admin = client.user.rank;
-                for (int i = 0; i < players.length; i++) {
-                    Client player = players[i];
-                    if (player == null || client == player)
-                        continue;
-
-                    if (msg.rm == player.user.rm) {
-                        MessageOutNewPlayer newPlayerMsg = new MessageOutNewPlayer();
-                        newPlayerMsg.playerid = player.playerid;
-                        newPlayerMsg.admin = player.user.rank;
-                        newPlayerMsg.username = player.user.username;
-                        client.sendMessage(newPlayerMsg);
-                        client.sendMessage(player.cachedAppearance);
-                        player.sendMessage(sourceNewPlayerMsg);
-                    }
-                }
-                for (int i = 0; i < Main.db.monsters.length; i++) {
-                    Database.Monster m = Main.db.monsters[i];
-                    if (m == null)
-                        continue;
-
-                    if (m.rm == msg.rm) {
-                        MessageOutSpawnMonster monsterMsg = new MessageOutSpawnMonster();
-                        monsterMsg.id = i;
-                        monsterMsg.x = m.new_x;
-                        monsterMsg.y = m.y;
-                        monsterMsg.t = m.t;
-                        client.sendMessage(monsterMsg);
-                    }
-                }
-                for (int i = 0; i < Main.db.items.length; i++) {
-                    Database.Item m = Main.db.items[i];
-                    if (m == null)
-                        continue;
-
-                    if (m.rm == msg.rm) {
-                        MessageOutCreateItem itemMsg = new MessageOutCreateItem();
-                        itemMsg.iid = i;
-                        itemMsg.x = m.x;
-                        itemMsg.y = m.y;
-                        itemMsg.amt = m.amt;
-                        itemMsg.t = m.t;
-                        client.sendMessage(itemMsg);
-                    }
-                }
+                updatePlayerRoom(sender);
             }
             break;
 
             case 9: {
                 // change room
                 MessageInChangeRoom msg = new MessageInChangeRoom();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
                 // okay, whatever
-                client.user.rm = msg.rm;
+                sender.user.rm = msg.rm;
                 MessageOutChangeRoom reply = new MessageOutChangeRoom();
                 reply.rm = msg.rm;
-                client.sendMessage(reply);
+                sender.sendMessage(reply);
 
                 // echo to other players
                 MessageOutPlayerLeft echoMsg = new MessageOutPlayerLeft();
-                echoMsg.userid = client.playerid;
+                echoMsg.userid = sender.playerid;
                 for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
-                    if (player == null || client == player)
+                    if (player == null || sender == player)
                         continue;
 
                     player.sendMessage(echoMsg);
@@ -370,23 +302,23 @@ public class ClientHandler {
             case 10: {
                 // save. (aka update info) -- we save on our own time.
                 MessageInUpdatePlayer msg = new MessageInUpdatePlayer();
-                msg.user = client.user;
-                msg.read(client.buffer);
+                msg.user = sender.user;
+                msg.read(sender.buffer);
             }
             break;
 
             case 11: {
                 // player damage
                 MessageInDamagePlayer msg = new MessageInDamagePlayer();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
                 // echo to other players
                 MessageOutDamagePlayer echoMsg = new MessageOutDamagePlayer();
-                echoMsg.userid = client.playerid;
+                echoMsg.userid = sender.playerid;
                 echoMsg.damage = msg.damage;
                 for (int i = 0; i < players.length; i++) {
                     Client player = players[i];
-                    if (player == null || client == player)
+                    if (player == null || sender == player)
                         continue;
 
                     player.sendMessage(echoMsg);
@@ -397,7 +329,7 @@ public class ClientHandler {
             case 12: {
                 // spawn item
                 MessageInCreateItem msg = new MessageInCreateItem();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
                 Database.Item item = new Database.Item();
                 item.x = msg.x;
@@ -429,12 +361,12 @@ public class ClientHandler {
             case 13: {
                 // take item
                 MessageInTakeItem msg = new MessageInTakeItem();
-                msg.read(client.buffer);
+                msg.read(sender.buffer);
 
                 if (Main.db.items[msg.iid] != null) {
                     MessageOutTakeItem echoMsg = new MessageOutTakeItem();
                     echoMsg.iid = msg.iid;
-                    echoMsg.user = client.playerid;
+                    echoMsg.user = sender.playerid;
                     for (int i = 0; i < players.length; i++) {
                         Client player = players[i];
                         if (player == null)
@@ -452,6 +384,57 @@ public class ClientHandler {
             default:
                 Logger.log("Unknown message type: " + type + " / size: " + messageSize);
                 break;
+        }
+    }
+
+    public void updatePlayerRoom(Client client) throws IOException {
+        MessageOutNewPlayer sourceNewPlayerMsg = new MessageOutNewPlayer();
+        sourceNewPlayerMsg.playerid = client.playerid;
+        sourceNewPlayerMsg.username = client.user.username;
+        sourceNewPlayerMsg.admin = client.user.rank;
+        for (int i = 0; i < players.length; i++) {
+            Client player = players[i];
+            if (player == null || client == player)
+                continue;
+
+            if (client.user.rm == player.user.rm) {
+                MessageOutNewPlayer newPlayerMsg = new MessageOutNewPlayer();
+                newPlayerMsg.playerid = player.playerid;
+                newPlayerMsg.admin = player.user.rank;
+                newPlayerMsg.username = player.user.username;
+                client.sendMessage(newPlayerMsg);
+                client.sendMessage(player.cachedAppearance);
+                player.sendMessage(sourceNewPlayerMsg);
+            }
+        }
+        for (int i = 0; i < Main.db.monsters.length; i++) {
+            Database.Monster m = Main.db.monsters[i];
+            if (m == null)
+                continue;
+
+            if (m.rm == client.user.rm) {
+                MessageOutSpawnMonster monsterMsg = new MessageOutSpawnMonster();
+                monsterMsg.id = i;
+                monsterMsg.x = m.new_x;
+                monsterMsg.y = m.y;
+                monsterMsg.t = m.t;
+                client.sendMessage(monsterMsg);
+            }
+        }
+        for (int i = 0; i < Main.db.items.length; i++) {
+            Database.Item m = Main.db.items[i];
+            if (m == null)
+                continue;
+
+            if (m.rm == client.user.rm) {
+                MessageOutCreateItem itemMsg = new MessageOutCreateItem();
+                itemMsg.iid = i;
+                itemMsg.x = m.x;
+                itemMsg.y = m.y;
+                itemMsg.amt = m.amt;
+                itemMsg.t = m.t;
+                client.sendMessage(itemMsg);
+            }
         }
     }
 

@@ -46,7 +46,7 @@ public class Logger {
             loggerBuffer += "\n.";
         Panel loggerPanel = new Panel();
         loggerBox = new Label(loggerBuffer);
-        loggerBox.setPreferredSize(new TerminalSize(60, loggerSize));
+        loggerBox.setPreferredSize(new TerminalSize(70, loggerSize));
         loggerPanel.addComponent(loggerBox);
         BasicWindow loggerWindow = new BasicWindow();
         loggerWindow.setComponent(loggerPanel);
@@ -56,7 +56,7 @@ public class Logger {
         cmdPanel.setLayoutManager(new LinearLayout(Direction.HORIZONTAL));
         cmdPanel.addComponent(new Label(">"));
         final CommandTextBox cmdBox = new CommandTextBox();
-        cmdBox.setPreferredSize(new TerminalSize(60, 1));
+        cmdBox.setPreferredSize(new TerminalSize(68, 1));
         cmdPanel.addComponent(cmdBox);
         final BasicWindow cmdWindow = new BasicWindow();
         cmdWindow.setComponent(cmdPanel);
@@ -66,19 +66,7 @@ public class Logger {
                 String cmd = cmdBox.getText();
                 cmdBox.setText("");
 
-                // broadcast
-                // TODO refactor
-                Logger.log("Server: " + cmd);
-                for (int i = 0; i < Main.clientHandler.players.length; i++) {
-                    Client player = Main.clientHandler.players[i];
-                    if (player == null)
-                        continue;
-
-                    try {
-                        player.sendMessage(MessageOutServerMessage.build("Server: " + cmd, Color.red));
-                    } catch (IOException e) {
-                    }
-                }
+                handleCommand(cmd);
             }
         };
 
@@ -105,5 +93,52 @@ public class Logger {
                 }
             });
         }
+    }
+
+    public static void handleCommand(String command) {
+        Logger.log("> " + command);
+        String[] parts = command.trim().split(" ");
+        if(parts.length == 0)
+            return;
+        int args = parts.length - 1;
+
+        switch (parts[0]) {
+            case "chat":
+            case "say":
+                if(!requireArgs(args, 1, -1))
+                    break;
+
+                String say = "Server: " + command.substring(parts[0].length() + 1);
+                Logger.log(say);
+                // broadcast
+                for (int i = 0; i < Main.clientHandler.players.length; i++) {
+                    Client player = Main.clientHandler.players[i];
+                    if (player == null)
+                        continue;
+
+                    try {
+                        player.sendMessage(MessageOutServerMessage.build(say, Color.red));
+                    } catch (IOException e) {
+                    }
+                }
+                break;
+            case "stats":
+                if(!requireArgs(args, 0, 0))
+                    break;
+
+                Logger.log("Sent: " + ((float)Main.bytes_sent / 1000.0f) + "kb / Recv: " + ((float)Main.bytes_received / 1000.0f) + "kb");
+                break;
+            default:
+                Logger.log("Unknown command.");
+                break;
+        }
+    }
+
+    public static boolean requireArgs(int given, int min, int max) {
+        if((min >= 0 && given < min) || (max >= 0 && given > max)) {
+            Logger.log("Required args: [" + min + ", " + max + "]. Given: " + given);
+            return false;
+        }
+        return true;
     }
 }
