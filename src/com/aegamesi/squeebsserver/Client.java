@@ -64,7 +64,7 @@ public class Client extends Thread {
     }
 
     public void sendMessage(Message m) throws IOException {
-        Logger.log("Sending message " + m.type);
+        Logger.log("Sending message " + m.getClass().getSimpleName());
 
         buffer.clear();
         m.write(buffer);

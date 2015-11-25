@@ -393,6 +393,61 @@ public class ClientHandler {
             }
             break;
 
+            case 12: {
+                // spawn item
+                MessageInCreateItem msg = new MessageInCreateItem();
+                msg.read(client.buffer);
+
+                Database.Item item = new Database.Item();
+                item.x = msg.x;
+                item.y = msg.y;
+                item.t = msg.t;
+                item.amt = msg.amt;
+                item.rm = msg.rm;
+                item.iid = Util.findSlot(Main.db.items);
+                Main.db.items[item.iid] = item;
+
+                // tell people
+                MessageOutCreateItem spawn = new MessageOutCreateItem();
+                spawn.x = item.x;
+                spawn.y = item.y;
+                spawn.t = item.t;
+                spawn.iid = item.iid;
+                spawn.amt = item.amt;
+                for (int i = 0; i < players.length; i++) {
+                    Client player = players[i];
+                    if (player == null)
+                        continue;
+
+                    if (player.user.rm == item.rm)
+                        player.sendMessage(spawn);
+                }
+            }
+            break;
+
+            case 13: {
+                // take item
+                MessageInTakeItem msg = new MessageInTakeItem();
+                msg.read(client.buffer);
+
+                if (Main.db.items[msg.iid] != null) {
+                    MessageOutTakeItem echoMsg = new MessageOutTakeItem();
+                    echoMsg.iid = msg.iid;
+                    echoMsg.user = client.playerid;
+                    for (int i = 0; i < players.length; i++) {
+                        Client player = players[i];
+                        if (player == null)
+                            continue;
+
+                        if(player.user.rm == Main.db.items[msg.iid].rm)
+                            player.sendMessage(echoMsg);
+                    }
+
+                    Main.db.items[msg.iid] = null;
+                }
+            }
+            break;
+
             default:
                 Logger.log("Unknown message type: " + type);
                 break;

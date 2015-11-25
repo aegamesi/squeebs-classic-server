@@ -9,6 +9,7 @@ import java.util.List;
 public class Database {
     public List<User> users = new ArrayList<>();
     public transient Monster[] monsters = new Monster[2000];
+    public transient Item[] items = new Item[2000];
 
     public static class Monster {
         public int id;
@@ -23,7 +24,17 @@ public class Database {
 
         public float ttl = 60.0f;
         public float move_timer = 3.0f;
+    }
 
+    public static class Item {
+        public int iid;
+        public int t;
+        public int x;
+        public int y;
+        public int amt;
+        public int rm;
+
+        public float ttl = 300.0f;
     }
 
     public static class User {

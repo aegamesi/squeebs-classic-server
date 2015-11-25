@@ -37,6 +37,13 @@ public class Main {
             user.password = "test";
             user.lvl = 10;
             db.users.add(user);
+
+            user = new Database.User();
+            user.username = "admin";
+            user.password = "test";
+            user.lvl = 50;
+            user.rank = 1;
+            db.users.add(user);
         }
 
         clientHandler = new ClientHandler();
