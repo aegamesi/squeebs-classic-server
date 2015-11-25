@@ -49,9 +49,9 @@ public class Client extends Thread {
                 byte[] msg = new byte[messageSize];
 
                 int total_read = 0;
-                while(total_read < messageSize) {
+                while (total_read < messageSize) {
                     int just_read = is.read(msg, total_read, messageSize - total_read);
-                    if(just_read == -1) {
+                    if (just_read == -1) {
                         running = false;
                         break;
                     }
@@ -72,7 +72,7 @@ public class Client extends Thread {
         }
         Logger.log(this + " has disconnected.");
 
-        if(playerid >= 0)
+        if (playerid >= 0)
             Main.clientHandler.players[playerid] = null;
     }
 

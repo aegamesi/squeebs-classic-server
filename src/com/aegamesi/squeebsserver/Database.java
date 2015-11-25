@@ -78,7 +78,7 @@ public class Database {
         }
 
         public void read(ByteBuffer b, boolean full) {
-            if(full) {
+            if (full) {
                 username = Message.getString(b);
                 rank = b.get();
             }
@@ -88,13 +88,13 @@ public class Database {
             rm = b.getShort();
             lvl = b.getShort();
             xp = b.getDouble();
-            if(full)
+            if (full)
                 m_xp = b.getDouble();
             hp = b.getShort();
-            if(full)
+            if (full)
                 m_hp = b.getShort();
             mp = b.getShort();
-            if(full)
+            if (full)
                 m_mp = b.getShort();
             str = b.getShort();
             agil = b.getShort();
@@ -114,7 +114,7 @@ public class Database {
         }
 
         public void write(ByteBuffer b, boolean full) {
-            if(full) {
+            if (full) {
                 Message.putString(b, username);
                 b.put((byte) rank);
             }
@@ -124,13 +124,13 @@ public class Database {
             b.putShort((short) rm);
             b.putShort((short) lvl);
             b.putDouble(xp);
-            if(full)
+            if (full)
                 b.putDouble(m_xp);
             b.putShort((short) hp);
-            if(full)
+            if (full)
                 b.putShort((short) m_hp);
             b.putShort((short) mp);
-            if(full)
+            if (full)
                 b.putShort((short) m_mp);
             b.putShort((short) str);
             b.putShort((short) agil);

@@ -4,8 +4,6 @@ import com.aegamesi.squeebsserver.messages.MessageOutServerMessage;
 import com.aegamesi.squeebsserver.ui.CommandTextBox;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
@@ -17,20 +15,19 @@ import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Logger {
+    private static final int loggerSize = 19;
     private static boolean headless = true;
     private static Label loggerBox;
     private static MultiWindowTextGUI gui;
-    private static final int loggerSize = 19;
     private static String loggerBuffer;
 
 
     public static void init() {
         try {
             setupGUI();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -39,13 +36,13 @@ public class Logger {
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
         Screen screen = new TerminalScreen(terminal);
         screen.startScreen();
-        if(terminal instanceof SwingTerminal)
+        if (terminal instanceof SwingTerminal)
             headless = false;
 
 
         // logger panel
         loggerBuffer = ".";
-        for(int i = 0; i < loggerSize - 1; i++)
+        for (int i = 0; i < loggerSize - 1; i++)
             loggerBuffer += "\n.";
         Panel loggerPanel = new Panel();
         loggerBox = new Label(loggerBuffer);
@@ -95,10 +92,10 @@ public class Logger {
     }
 
     public static void log(final String str) {
-        if(!headless)
+        if (!headless)
             System.out.println(str);
 
-        if(gui != null) {
+        if (gui != null) {
             gui.getGUIThread().invokeLater(new Runnable() {
                 @Override
                 public void run() {

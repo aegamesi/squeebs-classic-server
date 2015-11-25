@@ -311,12 +311,12 @@ public class ClientHandler {
                         player.sendMessage(sourceNewPlayerMsg);
                     }
                 }
-                for(int i = 0; i < Main.db.monsters.length; i++) {
+                for (int i = 0; i < Main.db.monsters.length; i++) {
                     Database.Monster m = Main.db.monsters[i];
                     if (m == null)
                         continue;
 
-                    if(m.rm == msg.rm) {
+                    if (m.rm == msg.rm) {
                         MessageOutSpawnMonster monsterMsg = new MessageOutSpawnMonster();
                         monsterMsg.id = i;
                         monsterMsg.x = m.new_x;
@@ -325,12 +325,12 @@ public class ClientHandler {
                         client.sendMessage(monsterMsg);
                     }
                 }
-                for(int i = 0; i < Main.db.items.length; i++) {
+                for (int i = 0; i < Main.db.items.length; i++) {
                     Database.Item m = Main.db.items[i];
                     if (m == null)
                         continue;
 
-                    if(m.rm == msg.rm) {
+                    if (m.rm == msg.rm) {
                         MessageOutCreateItem itemMsg = new MessageOutCreateItem();
                         itemMsg.iid = i;
                         itemMsg.x = m.x;
@@ -440,7 +440,7 @@ public class ClientHandler {
                         if (player == null)
                             continue;
 
-                        if(player.user.rm == Main.db.items[msg.iid].rm)
+                        if (player.user.rm == Main.db.items[msg.iid].rm)
                             player.sendMessage(echoMsg);
                     }
 
