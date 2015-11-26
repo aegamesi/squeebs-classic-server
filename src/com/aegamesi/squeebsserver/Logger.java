@@ -15,7 +15,12 @@ import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 
 import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Logger {
     private static final int loggerSize = 19;
@@ -24,10 +29,16 @@ public class Logger {
     private static MultiWindowTextGUI gui;
     private static String loggerBuffer;
 
+    private static PrintWriter logWriter;
+    private static SimpleDateFormat sdf = new SimpleDateFormat("[yy-MM-dd HH:mm:ss] ");
+
 
     public static void init() {
         try {
             setupGUI();
+
+            logWriter = new PrintWriter(new BufferedWriter(new FileWriter("log.txt", true)));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,9 +92,6 @@ public class Logger {
     }
 
     public static void log(final String str) {
-        if (!headless)
-            System.out.println(str);
-
         if (gui != null) {
             gui.getGUIThread().invokeLater(new Runnable() {
                 @Override
@@ -94,6 +102,10 @@ public class Logger {
                 }
             });
         }
+
+        String logStr = sdf.format(new Date()) + str;
+        logWriter.println(logStr);
+        logWriter.flush();
     }
 
     public static void handleCommand(String command) {
