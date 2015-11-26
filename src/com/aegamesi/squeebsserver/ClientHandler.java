@@ -244,6 +244,11 @@ public class ClientHandler {
                 reply.rm = msg.rm;
                 sender.sendMessage(reply);
 
+                // tell monster spawners
+                for (MonsterSpawner spawner : Main.db.spawners)
+                    if(msg.rm == spawner.rm)
+                        spawner.playerEntered();
+
                 // echo to other players
                 MessageOutPlayerLeft echoMsg = new MessageOutPlayerLeft();
                 echoMsg.userid = sender.playerid;

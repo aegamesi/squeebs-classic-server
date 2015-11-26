@@ -69,6 +69,7 @@ public class Client extends Thread {
         }
 
         disconnect();
+        Logger.log(this + " has disconnected.");
     }
 
     public void sendMessage(Message m) throws IOException {
@@ -94,8 +95,6 @@ public class Client extends Thread {
     }
 
     public void disconnect() {
-        Logger.log(this + " has disconnected.");
-
         if (playerid >= 0)
             Main.clientHandler.players[playerid] = null;
         if(user != null && user.status == 1)
