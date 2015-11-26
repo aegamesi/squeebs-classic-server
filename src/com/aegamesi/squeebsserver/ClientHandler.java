@@ -118,6 +118,8 @@ public class ClientHandler {
             case 2: {
                 MessageInAppearance msg = new MessageInAppearance();
                 msg.read(sender.buffer);
+                msg.userid = sender.playerid;
+
                 sender.cachedAppearance = msg;
 
                 // echo to other players
@@ -335,6 +337,8 @@ public class ClientHandler {
                 client.sendMessage(newPlayerMsg);
                 client.sendMessage(player.cachedAppearance);
                 player.sendMessage(sourceNewPlayerMsg);
+                if(client.cachedAppearance != null)
+                    player.sendMessage(client.cachedAppearance);
             }
         }
         for (int i = 0; i < Main.db.monsters.length; i++) {
