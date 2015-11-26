@@ -26,8 +26,11 @@ public class Database {
         dbDirectory = new File("./server_db");
         gson = new Gson();
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("monsters.json")));
-        monsterInfo = gson.fromJson(reader, MonsterInfo[].class);
+        BufferedReader jsonReader;
+        jsonReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("monsters.json")));
+        monsterInfo = gson.fromJson(jsonReader, MonsterInfo[].class);
+        jsonReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("spawners.json")));
+        spawners = gson.fromJson(jsonReader, MonsterSpawner[].class);
     }
 
     public void load() {

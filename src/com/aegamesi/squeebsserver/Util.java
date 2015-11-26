@@ -43,7 +43,7 @@ public class Util {
     public static int getPlayersInRoom(int rm) {
         int n = 0;
         for(Database.User m : Main.db.users)
-            if(m != null && m.rm == rm)
+            if(m != null && m.rm == rm && m.status == 1)
                 n++;
         return n;
     }

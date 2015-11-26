@@ -14,6 +14,9 @@ public class PhysicsLoop extends Thread {
 
     @Override
     public void run() {
+        for(MonsterSpawner spawner : Main.db.spawners)
+            spawner.init();
+
         while (Main.running) {
             float dt = 1.0f / (float) Main.TPS;
 

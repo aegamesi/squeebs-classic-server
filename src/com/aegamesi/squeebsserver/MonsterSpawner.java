@@ -12,38 +12,39 @@ public class MonsterSpawner {
     public transient double timer = -1;
 
     public double base_timer;
-    public double triggerOnPlayer = -1; // if a player entering the room triggers spawning
-    public boolean normalSpawner = true; // spawn rate decreases as monster amount increases
-    public boolean onlyOne = false; // don't schedule a spawn if there are already monsters
+    public double base_timer_variance;
+    public double trigger_on_player = -1; // if a player entering the room triggers spawning
+    public boolean normal_spawner = true; // spawn rate decreases as monster amount increases
+    public boolean only_one = false; // don't schedule a spawn if there are already monsters
 
-    public MonsterSpawner(int x, int y, int rm, int t) {
-        this.x = x;
-        this.y = y;
-        this.t = t;
+    public void init() {
         info = Database.monsterInfo[t];
+
+        trigger();
     }
 
     public void playerEntered() {
-        if(triggerOnPlayer > 0.0) {
-            timer = triggerOnPlayer;
+        if(trigger_on_player > 0.0) {
+            timer = trigger_on_player;
         }
     }
 
     public void trigger() {
         int players_in_room = Util.getPlayersInRoom(rm);
         int monsters_in_room = Util.getMonstersInRoom(rm);
-        if(triggerOnPlayer < 0.0) {
+        if(trigger_on_player < 0.0) {
             // regular spawning
-            timer = base_timer / (double)Math.max(players_in_room, 1);
+            timer = (base_timer + (Util.random.nextDouble() * base_timer_variance));
+            timer /= (double)Math.max(players_in_room, 1);
         }
 
         if(players_in_room == 0)
             return;
 
-        if(onlyOne && monsters_in_room > 0)
+        if(only_one && monsters_in_room > 0)
             return;
 
-        if(normalSpawner) {
+        if(normal_spawner) {
             //  round(random((instance_number(obj_monster)*4)+5)) = 1
             if(Util.random.nextInt(5 + (monsters_in_room * 4)) != 1)
                 return;
@@ -53,6 +54,7 @@ public class MonsterSpawner {
     }
 
     public void spawn() {
+        Logger.log("Spawning monster");
         Database.Monster monster = new Database.Monster();
         monster.x = x;
         monster.y = y;

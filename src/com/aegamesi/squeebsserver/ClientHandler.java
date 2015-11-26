@@ -171,6 +171,8 @@ public class ClientHandler {
                 // spawn monster
                 MessageInSpawnMonster msg = new MessageInSpawnMonster();
                 msg.read(sender.buffer);
+                if(msg != null)
+                    break; // disallow client monster spawning
 
                 Database.Monster monster = new Database.Monster();
                 monster.x = msg.x;
