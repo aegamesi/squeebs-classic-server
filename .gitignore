@@ -3,6 +3,7 @@ server_db/
 log.txt
 
 # Created by https://www.gitignore.io/api/java,intellij
+.DS_Store
 
 ### Java ###
 *.class

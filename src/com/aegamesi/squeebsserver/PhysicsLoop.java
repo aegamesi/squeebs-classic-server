@@ -19,11 +19,10 @@ public class PhysicsLoop extends Thread {
         while (true) {
             float dt = 1.0f / (float) Main.TPS;
 
-            // auto save
+            // auto save db
             save_timer -= dt;
             if(save_timer < 0.0f) {
                 save_timer = 300.0f;
-                Logger.log("Saving database...");
                 Main.db.save();
             }
 
