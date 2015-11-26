@@ -1,6 +1,10 @@
 package com.aegamesi.squeebsserver;
 
 import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Util {
     public static String motd = "Welcome to OldSchool Squeebs!";
@@ -19,5 +23,11 @@ public class Util {
             if (arr[i] == null)
                 return i;
         return -1;
+    }
+
+    public static void writeStringToFile(File f, String s) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(f));
+        writer.write(s);
+        writer.close();
     }
 }

@@ -73,9 +73,7 @@ public class Database {
             try {
                 String json = gson.toJson(player);
                 File playerFile = new File(dbDirectory, "player_" + player.username + ".json");
-                BufferedWriter writer = new BufferedWriter(new FileWriter(playerFile));
-                writer.write(json);
-                writer.close();
+                Util.writeStringToFile(playerFile, json);
             } catch(IOException e) {
 
             }

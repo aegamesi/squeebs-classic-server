@@ -16,7 +16,7 @@ public class PhysicsLoop extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (Main.running) {
             float dt = 1.0f / (float) Main.TPS;
 
             // auto save db
@@ -84,5 +84,27 @@ public class PhysicsLoop extends Thread {
             } catch (InterruptedException e) {
             }
         }
+    }
+
+    public int getMonstersInRoom(int rm) {
+        int n = 0;
+        for(Database.Monster m : Main.db.monsters)
+            if(m != null && m.rm == rm)
+                n++;
+        return n;
+    }
+    public int getPlayersInRoom(int rm) {
+        int n = 0;
+        for(Database.User m : Main.db.users)
+            if(m != null && m.rm == rm)
+                n++;
+        return n;
+    }
+    public int getItemsInRoom(int rm) {
+        int n = 0;
+        for(Database.Item m : Main.db.items)
+            if(m != null && m.rm == rm)
+                n++;
+        return n;
     }
 }
