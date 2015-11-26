@@ -1,5 +1,6 @@
 package com.aegamesi.squeebsserver;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,16 +15,16 @@ public class Main {
     public static long bytes_received = 0;
 
     public static boolean running = true;
-    public static Database db = new Database();
+    public static Database db;
     public static ClientHandler clientHandler;
     public static PhysicsLoop physicsLoop;
 
     public static void main(String[] args) throws IOException {
         // setup gui
         Logger.init();
-
         Logger.log("Starting up Squeebs Java Server...");
 
+        db = new Database();
         db.load();
 
         clientHandler = new ClientHandler();

@@ -6,12 +6,17 @@ import com.google.gson.Gson;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Database {
     public List<User> users = new ArrayList<>();
     public transient Monster[] monsters = new Monster[2000];
     public transient Item[] items = new Item[2000];
+
+    // encyclopedia
+    public static MonsterInfo[] monsterInfo;
 
     public transient File dbDirectory;
     public transient Gson gson;
@@ -19,6 +24,9 @@ public class Database {
     public Database() {
         dbDirectory = new File("./server_db");
         gson = new Gson();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("monsters.json")));
+        monsterInfo = gson.fromJson(reader, MonsterInfo[].class);
     }
 
     public void load() {
@@ -104,6 +112,29 @@ public class Database {
         public int rm;
 
         public float ttl = 300.0f;
+    }
+
+    public static class MonsterInfo {
+        public int id;
+        public String name;
+        public int hp;
+        public int xp;
+        public int arm;
+        public int str;
+        public double spd;
+        public int gld;
+        public boolean boss = false;
+
+        public int item1 = 0;
+        public int item2 = 0;
+        public int item3 = 0;
+        public int item4 = 0;
+        public int item5 = 0;
+        public double per1 = 0;
+        public double per2 = 0;
+        public double per3 = 0;
+        public double per4 = 0;
+        public double per5 = 0;
     }
 
     public static class User {
