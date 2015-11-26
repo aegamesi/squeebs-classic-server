@@ -111,16 +111,7 @@ public class Logger {
                 String say = "Server: " + command.substring(parts[0].length() + 1);
                 Logger.log(say);
                 // broadcast
-                for (int i = 0; i < Main.clientHandler.players.length; i++) {
-                    Client player = Main.clientHandler.players[i];
-                    if (player == null)
-                        continue;
-
-                    try {
-                        player.sendMessage(MessageOutServerMessage.build(say, Color.red));
-                    } catch (IOException e) {
-                    }
-                }
+                Main.clientHandler.broadcast(MessageOutServerMessage.build(say, Color.red), -1, null);
                 break;
             case "stats":
                 if(!requireArgs(args, 0, 0))

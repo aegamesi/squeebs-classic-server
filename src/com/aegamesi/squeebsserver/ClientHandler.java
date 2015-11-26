@@ -121,14 +121,7 @@ public class ClientHandler {
                 sender.cachedAppearance = msg;
 
                 // echo to other players
-                for (int i = 0; i < players.length; i++) {
-                    Client player = players[i];
-                    if (player == null)
-                        continue;
-
-                    if (player.user.rm == sender.user.rm)
-                        player.sendMessage(msg);
-                }
+                broadcast(msg, sender.user.rm, null);
             }
             break;
             case 3: {
@@ -140,17 +133,11 @@ public class ClientHandler {
                     sender.user.status = 0;
 
                 // echo to other players
+                broadcast(MessageOutServerMessage.build(sender.user.username + " has left the server.", Color.yellow), -1, null);
+
                 MessageOutPlayerLeft response = new MessageOutPlayerLeft();
                 response.userid = sender.playerid;
-                for (int i = 0; i < players.length; i++) {
-                    Client player = players[i];
-                    if (player == null)
-                        continue;
-
-                    player.sendMessage(MessageOutServerMessage.build(sender.user.username + " has left the server.", Color.yellow));
-                    if (player.user.rm == sender.user.rm)
-                        player.sendMessage(response);
-                }
+                broadcast(response, sender.user.rm, null);
 
                 Logger.log(msg.username + " has left.");
                 sender.disconnect();
@@ -166,13 +153,7 @@ public class ClientHandler {
                 Logger.log(msg.msg);
 
                 // Echo to other players
-                for (int i = 0; i < players.length; i++) {
-                    Client player = players[i];
-                    if (player == null || sender == player)
-                        continue;
-
-                    player.sendMessage(msg);
-                }
+                broadcast(msg, -1, sender);
             }
             break;
 
@@ -187,14 +168,7 @@ public class ClientHandler {
                 sender.user.rm = msg.rm;
 
                 // Echo to other players
-                for (int i = 0; i < players.length; i++) {
-                    Client player = players[i];
-                    if (player == null || sender == player)
-                        continue;
-
-                    if (player.user.rm == sender.user.rm)
-                        player.sendMessage(msg);
-                }
+                broadcast(msg, sender.user.rm, sender);
             }
             break;
 
@@ -221,14 +195,7 @@ public class ClientHandler {
                 spawn.y = monster.y;
                 spawn.t = monster.t;
                 spawn.id = monster.id;
-                for (int i = 0; i < players.length; i++) {
-                    Client player = players[i];
-                    if (player == null)
-                        continue;
-
-                    if (player.user.rm == monster.rm)
-                        player.sendMessage(spawn);
-                }
+                broadcast(spawn, monster.rm, null);
             }
             break;
 
@@ -236,25 +203,19 @@ public class ClientHandler {
                 // damage monster
                 MessageInDamageMonster msg = new MessageInDamageMonster();
                 msg.read(sender.buffer);
+                Database.Monster monster = Main.db.monsters[msg.mid];
 
-                if (Main.db.monsters[msg.mid] != null) {
-                    int xp = Math.round(((float) Main.db.monsters[msg.mid].xp * ((float) msg.dmg / (float) Main.db.monsters[msg.mid].m_hp)) + 0.5f);
-                    Main.db.monsters[msg.mid].hp -= msg.dmg;
-                    Main.db.monsters[msg.mid].ttl = 60.0f;
+                if (monster != null) {
+                    int xp = Math.round(((float)monster.xp * ((float) msg.dmg / (float) monster.m_hp)) + 0.5f);
+                    monster.hp -= msg.dmg;
+                    monster.ttl = 60.0f;
 
                     // echo to other players
                     MessageOutDamageMonster echoMsg = new MessageOutDamageMonster();
                     echoMsg.mid = msg.mid;
                     echoMsg.dmg = msg.dmg;
                     echoMsg.sp = msg.sp;
-                    for (int i = 0; i < players.length; i++) {
-                        Client player = players[i];
-                        if (player == null || sender == player)
-                            continue;
-
-                        if (Main.db.monsters[msg.mid].rm == player.user.rm)
-                            player.sendMessage(echoMsg);
-                    }
+                    broadcast(msg, monster.rm, sender); /// XXX check if this should actually not be sent to the player who sent it
 
                     // send xp
                     MessageOutMonsterXP xpMsg = new MessageOutMonsterXP();
@@ -289,13 +250,7 @@ public class ClientHandler {
                 // echo to other players
                 MessageOutPlayerLeft echoMsg = new MessageOutPlayerLeft();
                 echoMsg.userid = sender.playerid;
-                for (int i = 0; i < players.length; i++) {
-                    Client player = players[i];
-                    if (player == null || sender == player)
-                        continue;
-
-                    player.sendMessage(echoMsg);
-                }
+                broadcast(echoMsg, -1, sender);
             }
             break;
 
@@ -316,13 +271,7 @@ public class ClientHandler {
                 MessageOutDamagePlayer echoMsg = new MessageOutDamagePlayer();
                 echoMsg.userid = sender.playerid;
                 echoMsg.damage = msg.damage;
-                for (int i = 0; i < players.length; i++) {
-                    Client player = players[i];
-                    if (player == null || sender == player)
-                        continue;
-
-                    player.sendMessage(echoMsg);
-                }
+                broadcast(echoMsg, sender.user.rm, sender);
             }
             break;
 
@@ -347,14 +296,7 @@ public class ClientHandler {
                 spawn.t = item.t;
                 spawn.iid = item.iid;
                 spawn.amt = item.amt;
-                for (int i = 0; i < players.length; i++) {
-                    Client player = players[i];
-                    if (player == null)
-                        continue;
-
-                    if (player.user.rm == item.rm)
-                        player.sendMessage(spawn);
-                }
+                broadcast(spawn, item.rm, null);
             }
             break;
 
@@ -367,14 +309,7 @@ public class ClientHandler {
                     MessageOutTakeItem echoMsg = new MessageOutTakeItem();
                     echoMsg.iid = msg.iid;
                     echoMsg.user = sender.playerid;
-                    for (int i = 0; i < players.length; i++) {
-                        Client player = players[i];
-                        if (player == null)
-                            continue;
-
-                        if (player.user.rm == Main.db.items[msg.iid].rm)
-                            player.sendMessage(echoMsg);
-                    }
+                    broadcast(echoMsg, Main.db.items[msg.iid].rm, null);
 
                     Main.db.items[msg.iid] = null;
                 }
@@ -440,6 +375,26 @@ public class ClientHandler {
 
     public void hackAttempt(Client c) {
         Logger.log("Hack attempt from " + c);
+    }
+
+    public void broadcast(Message message, int rm, Client not_client) {
+        for (int i = 0; i < players.length; i++) {
+            Client player = players[i];
+            if (player == null)
+                continue;
+
+            if(rm != -1 && player.user.rm != rm)
+                continue;
+
+            if(not_client != null && player == not_client)
+                continue;
+
+            try {
+                player.sendMessage(message);
+            } catch(IOException e) {
+
+            }
+        }
     }
 
     public void handleNewClient(Socket socket) {
