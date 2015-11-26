@@ -1,6 +1,9 @@
 # just included here for most up to date version
 src/com/googlecode/lanterna
 
+# Squeebs Server db directory
+server_db/
+
 # Created by https://www.gitignore.io/api/java,intellij
 
 ### Java ###

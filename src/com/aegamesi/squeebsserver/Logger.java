@@ -1,6 +1,7 @@
 package com.aegamesi.squeebsserver;
 
 import com.aegamesi.squeebsserver.messages.MessageOutServerMessage;
+import com.aegamesi.squeebsserver.messages.MessageOutShutdown;
 import com.aegamesi.squeebsserver.ui.CommandTextBox;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
@@ -118,6 +119,24 @@ public class Logger {
                     break;
 
                 Logger.log("Sent: " + ((float)Main.bytes_sent / 1000.0f) + "kb / Recv: " + ((float)Main.bytes_received / 1000.0f) + "kb");
+                break;
+            case "save":
+                if(!requireArgs(args, 0, 0))
+                    break;
+
+                Main.db.save();
+                Logger.log("Saved database.");
+                break;
+            case "shutdown":
+            case "stop":
+                if(!requireArgs(args, 0, 0))
+                    break;
+
+                Logger.log("Shutting down server.");
+                Main.db.save();
+
+                Main.clientHandler.broadcast(new MessageOutShutdown(), -1, null);
+                System.exit(0);
                 break;
             default:
                 Logger.log("Unknown command.");

@@ -24,21 +24,7 @@ public class Main {
 
         Logger.log("Starting up Squeebs Java Server...");
 
-        // test accounts
-        {
-            Database.User user = new Database.User();
-            user.username = "Eli";
-            user.password = "test";
-            user.lvl = 10;
-            db.users.add(user);
-
-            user = new Database.User();
-            user.username = "admin";
-            user.password = "test";
-            user.lvl = 50;
-            user.rank = 1;
-            db.users.add(user);
-        }
+        db.load();
 
         clientHandler = new ClientHandler();
         Logger.log("There are " + db.users.size() + " users.");

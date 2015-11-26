@@ -139,9 +139,7 @@ public class ClientHandler {
                 response.userid = sender.playerid;
                 broadcast(response, sender.user.rm, null);
 
-                Logger.log(msg.username + " has left.");
                 sender.disconnect();
-                clients.remove(sender);
             }
             break;
             case 4: {
@@ -392,7 +390,7 @@ public class ClientHandler {
             try {
                 player.sendMessage(message);
             } catch(IOException e) {
-
+                player.disconnect();
             }
         }
     }

@@ -40,7 +40,7 @@ public class Client extends Thread {
     }
 
     public void run() {
-        while (Main.running && running) {
+        while (Main.running && running && socket.isConnected()) {
             try {
                 int messageSize = is.readUnsignedShort() - 1; // minus one to account for that last byte
                 int packetType = is.readUnsignedByte();
@@ -64,16 +64,11 @@ public class Client extends Thread {
                 handler.handlePacket(packetType, messageSize, this);
 
             } catch (IOException e) {
-                try {
-                    socket.close();
-                } catch (IOException e1) {
-                }
+                break;
             }
         }
-        Logger.log(this + " has disconnected.");
 
-        if (playerid >= 0)
-            Main.clientHandler.players[playerid] = null;
+        disconnect();
     }
 
     public void sendMessage(Message m) throws IOException {
@@ -99,8 +94,16 @@ public class Client extends Thread {
     }
 
     public void disconnect() {
+        Logger.log(this + " has disconnected.");
+
+        if (playerid >= 0)
+            Main.clientHandler.players[playerid] = null;
+        Main.clientHandler.clients.remove(this);
+
         running = false;
         try {
+            is.close();
+            os.close();
             socket.close();
         } catch (IOException e) {
 

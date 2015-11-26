@@ -1,7 +1,9 @@
 package com.aegamesi.squeebsserver;
 
 import com.aegamesi.squeebsserver.messages.Message;
+import com.google.gson.Gson;
 
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +12,71 @@ public class Database {
     public List<User> users = new ArrayList<>();
     public transient Monster[] monsters = new Monster[2000];
     public transient Item[] items = new Item[2000];
+
+    public transient File dbDirectory;
+    public transient Gson gson;
+
+    public Database() {
+        dbDirectory = new File("./server_db");
+        gson = new Gson();
+    }
+
+    public void load() {
+        if(!dbDirectory.exists()) {
+            dbDirectory.mkdir();
+
+            // add test accounts
+            Database.User user = new Database.User();
+            user.username = "Eli";
+            user.password = "test";
+            user.lvl = 10;
+            users.add(user);
+
+            user = new Database.User();
+            user.username = "aegamesi";
+            user.password = "test";
+            user.lvl = 50;
+            user.rank = 1;
+            users.add(user);
+        } else {
+            // load all of the files
+            File[] playerFiles = dbDirectory.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return (name.startsWith("player_") && name.endsWith(".json"));
+                }
+            });
+
+            for(File playerFile : playerFiles) {
+                try {
+                    BufferedReader reader = new BufferedReader(new FileReader(playerFile));
+                    User user = gson.fromJson(reader, User.class);
+                    users.add(user);
+                    reader.close();
+                } catch(IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void save() {
+        if(!dbDirectory.exists()) {
+            dbDirectory.mkdir();
+        }
+
+        for(User player : users) {
+            try {
+                String json = gson.toJson(player);
+                File playerFile = new File(dbDirectory, "player_" + player.username + ".json");
+                BufferedWriter writer = new BufferedWriter(new FileWriter(playerFile));
+                writer.write(json);
+                writer.close();
+            } catch(IOException e) {
+
+            }
+        }
+    }
 
     public static class Monster {
         public int id;
