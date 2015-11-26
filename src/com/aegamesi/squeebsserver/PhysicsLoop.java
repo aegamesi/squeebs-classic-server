@@ -24,6 +24,16 @@ public class PhysicsLoop extends Thread {
                 Main.db.save();
             }
 
+            // monster spawning
+            for (MonsterSpawner spawner : Main.db.spawners) {
+                if(spawner.timer > 0.0) {
+                    spawner.timer -= dt;
+                    if(spawner.timer <= 0.0) {
+                        spawner.trigger();
+                    }
+                }
+            }
+
             // do monster stuff
             for (int i = 0; i < Main.db.monsters.length; i++) {
                 Database.Monster m = Main.db.monsters[i];

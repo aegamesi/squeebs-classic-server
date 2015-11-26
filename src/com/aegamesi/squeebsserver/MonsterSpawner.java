@@ -7,13 +7,14 @@ public class MonsterSpawner {
     public int y;
     public int rm;
     public int t;
-    public transient Database.MonsterInfo info;
 
+    public transient Database.MonsterInfo info;
+    public transient double timer = -1;
+
+    public double base_timer;
     public double triggerOnPlayer = -1; // if a player entering the room triggers spawning
-    public boolean requirePlayer = true; // won't spawn unless there's a player in the room
     public boolean normalSpawner = true; // spawn rate decreases as monster amount increases
-    public boolean onlyOne = true; // don't schedule a spawn if there are already monsters
-    public double spawnRate = -1; // the time between spawn attempts
+    public boolean onlyOne = false; // don't schedule a spawn if there are already monsters
 
     public MonsterSpawner(int x, int y, int rm, int t) {
         this.x = x;
@@ -22,21 +23,33 @@ public class MonsterSpawner {
         info = Database.monsterInfo[t];
     }
 
-    public void attemptSpawn() {
-        if(requirePlayer) {
-            if(Util.getPlayersInRoom(rm) == 0)
-                return;
+    public void playerEntered() {
+        if(triggerOnPlayer > 0.0) {
+            timer = triggerOnPlayer;
         }
+    }
+
+    public void trigger() {
+        int players_in_room = Util.getPlayersInRoom(rm);
+        int monsters_in_room = Util.getMonstersInRoom(rm);
+        if(triggerOnPlayer < 0.0) {
+            // regular spawning
+            timer = base_timer / (double)Math.max(players_in_room, 1);
+        }
+
+        if(players_in_room == 0)
+            return;
+
+        if(onlyOne && monsters_in_room > 0)
+            return;
+
         if(normalSpawner) {
             //  round(random((instance_number(obj_monster)*4)+5)) = 1
-            int monsters = Util.getMonstersInRoom(rm);
-            if(Util.random.nextInt(5 + (monsters * 4)) != 1)
+            if(Util.random.nextInt(5 + (monsters_in_room * 4)) != 1)
                 return;
         }
 
         spawn();
-
-        // schedule next spawn
     }
 
     public void spawn() {

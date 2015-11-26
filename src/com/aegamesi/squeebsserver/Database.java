@@ -14,6 +14,7 @@ public class Database {
     public List<User> users = new ArrayList<>();
     public transient Monster[] monsters = new Monster[2000];
     public transient Item[] items = new Item[2000];
+    public transient MonsterSpawner[] spawners = new MonsterSpawner[0];
 
     // encyclopedia
     public static MonsterInfo[] monsterInfo;
