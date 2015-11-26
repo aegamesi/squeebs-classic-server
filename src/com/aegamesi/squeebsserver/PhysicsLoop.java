@@ -8,6 +8,7 @@ import java.util.Random;
 
 public class PhysicsLoop extends Thread {
     public Random r;
+    public float save_timer = 300.0f;
 
     public PhysicsLoop() {
         r = new Random();
@@ -17,6 +18,14 @@ public class PhysicsLoop extends Thread {
     public void run() {
         while (true) {
             float dt = 1.0f / (float) Main.TPS;
+
+            // auto save
+            save_timer -= dt;
+            if(save_timer < 0.0f) {
+                save_timer = 300.0f;
+                Logger.log("Saving database...");
+                Main.db.save();
+            }
 
             // do monster stuff
             for (int i = 0; i < Main.db.monsters.length; i++) {

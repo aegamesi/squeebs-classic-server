@@ -33,10 +33,6 @@ public class Main {
         physicsLoop = new PhysicsLoop();
         physicsLoop.start();
 
-        // input loop
-        //inputLoop = new InputLoop();
-        //inputLoop.start();
-
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             Logger.log("Listening on port " + PORT);
 
