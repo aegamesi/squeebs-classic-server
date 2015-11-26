@@ -50,7 +50,11 @@ public class Database {
             for(File playerFile : playerFiles) {
                 try {
                     BufferedReader reader = new BufferedReader(new FileReader(playerFile));
+
                     User user = gson.fromJson(reader, User.class);
+                    if(user.status == 1)
+                        user.status = 0;
+
                     users.add(user);
                     reader.close();
                 } catch(IOException e) {

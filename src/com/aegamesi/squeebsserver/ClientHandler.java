@@ -128,9 +128,7 @@ public class ClientHandler {
                 MessageInQuit msg = new MessageInQuit();
                 msg.read(sender.buffer);
 
-                players[sender.playerid] = null;
-                if (sender.user.status == 1)
-                    sender.user.status = 0;
+                sender.disconnect();
 
                 // echo to other players
                 broadcast(MessageOutServerMessage.build(sender.user.username + " has left the server.", Color.yellow), -1, null);
@@ -139,7 +137,6 @@ public class ClientHandler {
                 response.userid = sender.playerid;
                 broadcast(response, sender.user.rm, null);
 
-                sender.disconnect();
             }
             break;
             case 4: {

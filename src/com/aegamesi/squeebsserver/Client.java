@@ -98,6 +98,8 @@ public class Client extends Thread {
 
         if (playerid >= 0)
             Main.clientHandler.players[playerid] = null;
+        if(user != null && user.status == 1)
+            user.status = 0;
         Main.clientHandler.clients.remove(this);
 
         running = false;
