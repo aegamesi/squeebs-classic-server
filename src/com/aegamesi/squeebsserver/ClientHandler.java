@@ -215,7 +215,7 @@ public class ClientHandler {
                     echoMsg.mid = msg.mid;
                     echoMsg.dmg = msg.dmg;
                     echoMsg.sp = msg.sp;
-                    broadcast(msg, monster.rm, sender); /// XXX check if this should actually not be sent to the player who sent it
+                    broadcast(echoMsg, monster.rm, sender); /// XXX check if this should actually not be sent to the player who sent it
 
                     // send xp
                     MessageOutMonsterXP xpMsg = new MessageOutMonsterXP();
