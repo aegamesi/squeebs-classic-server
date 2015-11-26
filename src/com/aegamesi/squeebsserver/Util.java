@@ -5,8 +5,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Random;
 
 public class Util {
+    public static Random random = new Random();
     public static String motd = "Welcome to OldSchool Squeebs!";
     public static String[] motd_quotes = {"In Beta 3 since 2007!", "Now even less secure!", "The game's gonna crash, don't blame me!", "Now with 100% more misspellings of 'shield'!", "Reborn almost exactly the same.", "12 Years a Squeeb", "Serving up Squeebs since 2005."};
 
@@ -29,5 +31,27 @@ public class Util {
         BufferedWriter writer = new BufferedWriter(new FileWriter(f));
         writer.write(s);
         writer.close();
+    }
+
+    public static int getMonstersInRoom(int rm) {
+        int n = 0;
+        for(Database.Monster m : Main.db.monsters)
+            if(m != null && m.rm == rm)
+                n++;
+        return n;
+    }
+    public static int getPlayersInRoom(int rm) {
+        int n = 0;
+        for(Database.User m : Main.db.users)
+            if(m != null && m.rm == rm)
+                n++;
+        return n;
+    }
+    public static int getItemsInRoom(int rm) {
+        int n = 0;
+        for(Database.Item m : Main.db.items)
+            if(m != null && m.rm == rm)
+                n++;
+        return n;
     }
 }

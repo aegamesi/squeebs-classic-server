@@ -4,14 +4,12 @@ import com.aegamesi.squeebsserver.messages.MessageOutKillMonster;
 import com.aegamesi.squeebsserver.messages.MessageOutMoveMonster;
 
 import java.io.IOException;
-import java.util.Random;
 
 public class PhysicsLoop extends Thread {
-    public Random r;
     public float save_timer = 300.0f;
 
     public PhysicsLoop() {
-        r = new Random();
+
     }
 
     @Override
@@ -35,8 +33,8 @@ public class PhysicsLoop extends Thread {
                 // monster movement
                 m.move_timer -= dt;
                 if (m.move_timer < 0.0f) {
-                    m.move_timer = 3.0f + r.nextFloat() * 3.0f;
-                    m.new_x = m.x - 150 + r.nextInt(300);
+                    m.move_timer = 3.0f + Util.random.nextFloat() * 3.0f;
+                    m.new_x = m.x - 150 + Util.random.nextInt(300);
 
                     // echo
                     MessageOutMoveMonster moveMsg = new MessageOutMoveMonster();
@@ -84,27 +82,5 @@ public class PhysicsLoop extends Thread {
             } catch (InterruptedException e) {
             }
         }
-    }
-
-    public int getMonstersInRoom(int rm) {
-        int n = 0;
-        for(Database.Monster m : Main.db.monsters)
-            if(m != null && m.rm == rm)
-                n++;
-        return n;
-    }
-    public int getPlayersInRoom(int rm) {
-        int n = 0;
-        for(Database.User m : Main.db.users)
-            if(m != null && m.rm == rm)
-                n++;
-        return n;
-    }
-    public int getItemsInRoom(int rm) {
-        int n = 0;
-        for(Database.Item m : Main.db.items)
-            if(m != null && m.rm == rm)
-                n++;
-        return n;
     }
 }

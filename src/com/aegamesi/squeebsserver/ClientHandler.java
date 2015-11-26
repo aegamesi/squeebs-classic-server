@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class ClientHandler {
     public List<Client> clients;
@@ -110,8 +109,7 @@ public class ClientHandler {
 
                 // send motd
                 sender.sendMessage(MessageOutServerMessage.build(Util.motd, Color.white));
-                Random r = new Random();
-                String motd_quote = "\"" + Util.motd_quotes[r.nextInt(Util.motd_quotes.length)] + "\"";
+                String motd_quote = "\"" + Util.motd_quotes[Util.random.nextInt(Util.motd_quotes.length)] + "\"";
                 sender.sendMessage(MessageOutServerMessage.build(motd_quote, Color.white));
             }
             break;
