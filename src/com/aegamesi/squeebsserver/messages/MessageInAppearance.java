@@ -11,9 +11,11 @@ public class MessageInAppearance extends Message {
     public int bodysprite;
     public int amusprite;
     public int helmsprite;
-    public int robesprite;
+    public int accsprite;
+    public int accdepth;
     public int shieldsprite;
     public int glovesprite;
+    public int bootsprite;
     public int subtype;
 
     public MessageInAppearance() {
@@ -28,9 +30,11 @@ public class MessageInAppearance extends Message {
         b.putShort((short) bodysprite);
         b.putShort((short) amusprite);
         b.putShort((short) helmsprite);
-        b.putShort((short) robesprite);
+        b.putShort((short) accsprite);
+        b.put((byte) accdepth);
         b.putShort((short) shieldsprite);
         b.putShort((short) glovesprite);
+        b.putShort((short) bootsprite);
         b.putShort((short) subtype);
     }
 
@@ -42,9 +46,11 @@ public class MessageInAppearance extends Message {
         bodysprite = b.getShort();
         amusprite = b.getShort();
         helmsprite = b.getShort();
-        robesprite = b.getShort();
+        accsprite = b.getShort();
+        accdepth = b.get();
         shieldsprite = b.getShort();
         glovesprite = b.getShort();
+        bootsprite = b.getShort();
         subtype = b.getShort();
     }
 }
