@@ -110,68 +110,6 @@ public class Logger {
 
     public static void handleCommand(String command) {
         Logger.log("> " + command);
-        String[] parts = command.trim().split(" ");
-        if(parts.length == 0)
-            return;
-        int args = parts.length - 1;
-
-        switch (parts[0]) {
-            case "chat":
-            case "say":
-                if(!requireArgs(args, 1, -1))
-                    break;
-
-                String say = "Server: " + command.substring(parts[0].length() + 1);
-                Logger.log(say);
-                // broadcast
-                Main.clientHandler.broadcast(MessageOutServerMessage.build(say, Color.red), -1, null);
-                break;
-            case "stats":
-                if(!requireArgs(args, 0, 0))
-                    break;
-
-                Logger.log("Sent: " + ((float)Main.bytes_sent / 1000.0f) + "kb / Recv: " + ((float)Main.bytes_received / 1000.0f) + "kb");
-                break;
-            case "save":
-                if(!requireArgs(args, 0, 0))
-                    break;
-
-                Main.db.save();
-                Logger.log("Saved database.");
-                break;
-            case "shutdown":
-            case "stop":
-                if(!requireArgs(args, 0, 0))
-                    break;
-
-                Logger.log("Shutting down server.");
-                Main.db.save();
-
-                Main.clientHandler.broadcast(new MessageOutShutdown(), -1, null);
-                System.exit(0);
-                break;
-            case "uptime":
-                if(!requireArgs(args, 0, 0))
-                    break;
-
-                long t_millis = System.currentTimeMillis() - Main.program_start_time;
-                long t_seconds = (t_millis / (1000)) % 60;
-                long t_minutes = (t_millis / (1000 * 60)) % 60;
-                long t_hours = (t_millis / (1000 * 60 * 60)) % 24;
-                long t_days = (t_millis / (1000 * 60 * 60 * 24));
-                Logger.log("Uptime: " + t_days + "d " + t_hours + "h " + t_minutes + "m " + t_seconds + "s");
-                break;
-            default:
-                Logger.log("Unknown command.");
-                break;
-        }
-    }
-
-    public static boolean requireArgs(int given, int min, int max) {
-        if((min >= 0 && given < min) || (max >= 0 && given > max)) {
-            Logger.log("Required args: [" + min + ", " + max + "]. Given: " + given);
-            return false;
-        }
-        return true;
+        CommandHandler.runCommand(command, null);
     }
 }
