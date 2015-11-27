@@ -13,6 +13,7 @@ public class Main {
 
     public static long bytes_sent = 0;
     public static long bytes_received = 0;
+    public static long program_start_time = 0L;
 
     public static boolean running = true;
     public static Database db;
@@ -23,6 +24,7 @@ public class Main {
         // setup gui
         Logger.init();
         Logger.log("Starting up Squeebs Java Server...");
+        program_start_time = System.currentTimeMillis();
 
         db = new Database();
         db.load();

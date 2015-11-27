@@ -1,24 +1,10 @@
 [
-  {
-    "x": 224,
-    "y": 416,
-    "t": 1,
-    "rm": 0,
-    "base_timer": 0.5,
-    "base_timer_variance": 3.5,
-    "trigger_on_player": -1,
-    "normal_spawner": true,
-    "only_one": false
-  },
-  {
-    "x": 320,
-    "y": 192,
-    "t": 2,
-    "rm": 0,
-    "base_timer": -1,
-    "base_timer_variance": -1,
-    "trigger_on_player": 0.5,
-    "normal_spawner": false,
-    "only_one": true
-  }
+  // room 'test'
+  {"x": 224, "y": 416, "t": 1, "rm": 0},
+  {"x": 320, "y": 192, "t": 1, "rm": 0},
+  {"x": 672, "y": 416, "t": 1, "rm": 0},
+  {"x": 608, "y": 192, "t": 2, "rm": 0},
+  { "x": 1600, "y": 160, "t": 2, "rm": 0},
+  { "x": 1888, "y": 192, "t": 2, "rm": 0},
+  { "x": 1696, "y": 320, "t": 2, "rm": 0}
 ]

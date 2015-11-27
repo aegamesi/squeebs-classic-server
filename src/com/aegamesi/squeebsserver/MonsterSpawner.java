@@ -11,8 +11,8 @@ public class MonsterSpawner {
     public transient Database.MonsterInfo info;
     public transient double timer = -1;
 
-    public double base_timer;
-    public double base_timer_variance;
+    public double base_timer = 0.5;
+    public double base_timer_variance = 3.5;
     public double trigger_on_player = -1; // if a player entering the room triggers spawning
     public boolean normal_spawner = true; // spawn rate decreases as monster amount increases
     public boolean only_one = false; // don't schedule a spawn if there are already monsters

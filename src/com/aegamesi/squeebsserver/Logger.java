@@ -150,6 +150,17 @@ public class Logger {
                 Main.clientHandler.broadcast(new MessageOutShutdown(), -1, null);
                 System.exit(0);
                 break;
+            case "uptime":
+                if(!requireArgs(args, 0, 0))
+                    break;
+
+                long t_millis = System.currentTimeMillis() - Main.program_start_time;
+                long t_seconds = (t_millis / (1000)) % 60;
+                long t_minutes = (t_millis / (1000 * 60)) % 60;
+                long t_hours = (t_millis / (1000 * 60 * 60)) % 24;
+                long t_days = (t_millis / (1000 * 60 * 60 * 24));
+                Logger.log("Uptime: " + t_days + "d " + t_hours + "h " + t_minutes + "m " + t_seconds + "s");
+                break;
             default:
                 Logger.log("Unknown command.");
                 break;
