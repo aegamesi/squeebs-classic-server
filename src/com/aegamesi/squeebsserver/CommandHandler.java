@@ -64,7 +64,7 @@ public class CommandHandler {
                 for(Client c : Main.clientHandler.clients) {
                     if (c.user != null) {
                         str += c.user.username + " ";
-                        num = 0;
+                        num++;
                     }
                 }
                 out.print("Players Online (" + num + "): " + str);
