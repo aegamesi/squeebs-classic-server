@@ -344,7 +344,7 @@ public class ClientHandler {
                 client.sendMessage(newPlayerMsg);
                 client.sendMessage(player.cachedAppearance);
                 player.sendMessage(sourceNewPlayerMsg);
-                if(client.cachedAppearance != null)
+                if (client.cachedAppearance != null)
                     player.sendMessage(client.cachedAppearance);
             }
         }
@@ -379,13 +379,9 @@ public class ClientHandler {
         }
     }
 
-    public void hackAttempt(Client c) {
-        Logger.log("Hack attempt from " + c);
-    }
-
-    public void broadcast(Message message, int rm, Client not_client) {
-        for (int i = 0; i < players.length; i++) {
-            Client player = players[i];
+    public int broadcast(Message message, int rm, Client not_client) {
+        int num = 0;
+        for(Client player : players) {
             if (player == null)
                 continue;
 
@@ -400,7 +396,9 @@ public class ClientHandler {
             } catch(IOException e) {
                 player.disconnect();
             }
+            num++;
         }
+        return num;
     }
 
     public void handleNewClient(Socket socket) {

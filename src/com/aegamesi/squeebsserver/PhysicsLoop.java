@@ -53,19 +53,9 @@ public class PhysicsLoop extends Thread {
                     MessageOutMoveMonster moveMsg = new MessageOutMoveMonster();
                     moveMsg.mid = i;
                     moveMsg.new_x = m.new_x;
-                    for (int j = 0; j < Main.clientHandler.players.length; j++) {
-                        Client player = Main.clientHandler.players[j];
-                        if (player == null)
-                            continue;
-
-                        try {
-                            if (player.user.rm == m.rm) {
-                                m.ttl = 60.0f;
-                                player.sendMessage(moveMsg);
-                            }
-                        } catch (IOException e) {
-                        }
-                    }
+                    int receivers = Main.clientHandler.broadcast(moveMsg, m.rm, null);
+                    if(receivers > 0)
+                        m.ttl = 60.0f;
                 }
 
                 // monster death / expiration
@@ -75,17 +65,9 @@ public class PhysicsLoop extends Thread {
 
                     MessageOutKillMonster killMsg = new MessageOutKillMonster();
                     killMsg.mid = i;
-                    for (int j = 0; j < Main.clientHandler.players.length; j++) {
-                        Client player = Main.clientHandler.players[j];
-                        if (player == null)
-                            continue;
+                    Main.clientHandler.broadcast(killMsg, m.rm, null);
 
-                        try {
-                            if (player.user.rm == m.rm)
-                                player.sendMessage(killMsg);
-                        } catch (IOException e) {
-                        }
-                    }
+                    // TODO do item drops / broadcast
                 }
             }
 
