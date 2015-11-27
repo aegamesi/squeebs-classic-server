@@ -144,11 +144,15 @@ public class ClientHandler {
                 MessageInChat msg = new MessageInChat();
                 msg.read(sender.buffer);
 
-                // TODO check for admin messages, etc.
                 Logger.log(msg.msg);
 
-                // Echo to other players
-                broadcast(msg, -1, sender);
+                String prefix = sender.user.username + ": ";
+                if(msg.msg.substring(prefix.length()).startsWith("/")) {
+                    CommandHandler.runCommand(msg.msg.substring(prefix.length() + 1), sender);
+                } else {
+                    // Echo to other players
+                    broadcast(msg, -1, sender);
+                }
             }
             break;
 
@@ -171,10 +175,8 @@ public class ClientHandler {
                 // spawn monster
                 MessageInSpawnMonster msg = new MessageInSpawnMonster();
                 msg.read(sender.buffer);
-                if(msg != null)
-                    break; // disallow client monster spawning
 
-                Database.Monster monster = new Database.Monster();
+                /*Database.Monster monster = new Database.Monster();
                 monster.x = msg.x;
                 monster.y = msg.y;
                 monster.t = msg.t;
@@ -192,7 +194,7 @@ public class ClientHandler {
                 spawn.y = monster.y;
                 spawn.t = monster.t;
                 spawn.id = monster.id;
-                broadcast(spawn, monster.rm, null);
+                broadcast(spawn, monster.rm, null);*/
             }
             break;
 

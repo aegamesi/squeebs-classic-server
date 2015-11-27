@@ -56,6 +56,20 @@ public class CommandHandler {
                 out.print("Uptime: " + t_days + "d " + t_hours + "h " + t_minutes + "m " + t_seconds + "s");
             }
         });
+        addCommand(new String[]{"players", "online"}, PLAYER, 0, 0, new Command() {
+            @Override
+            public void run(Client sender, OutputHandler out, String cmd, String[] args) {
+                String str = "";
+                int num = 0;
+                for(Client c : Main.clientHandler.clients) {
+                    if (c.user != null) {
+                        str += c.user.username + " ";
+                        num = 0;
+                    }
+                }
+                out.print("Players Online (" + num + "): " + str);
+            }
+        });
     }
 
     public static class CommandInfo {
@@ -94,7 +108,7 @@ public class CommandHandler {
                 @Override
                 public void print(String line) {
                     try {
-                        sender.sendMessage(MessageOutServerMessage.build(line, Color.black));
+                        sender.sendMessage(MessageOutServerMessage.build(line, Color.lightGray));
                     } catch(IOException e) {
                     }
                 }
