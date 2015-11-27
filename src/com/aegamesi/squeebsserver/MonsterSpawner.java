@@ -21,6 +21,9 @@ public class MonsterSpawner {
     public void init() {
         info = Database.monsterInfo[t];
 
+        if(!regular_spawning)
+            normal_spawner = false;
+
         trigger();
     }
 
