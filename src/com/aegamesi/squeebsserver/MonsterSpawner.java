@@ -16,6 +16,7 @@ public class MonsterSpawner {
     public double trigger_on_player = -1; // if a player entering the room triggers spawning
     public boolean normal_spawner = true; // spawn rate decreases as monster amount increases
     public boolean only_one = false; // don't schedule a spawn if there are already monsters
+    public boolean regular_spawning = true; // whether to regularly schedule spawns
 
     public void init() {
         info = Database.monsterInfo[t];
@@ -24,7 +25,12 @@ public class MonsterSpawner {
     }
 
     public void playerEntered() {
+        int players_in_room = Util.getPlayersInRoom(rm);
+        int monsters_in_room = Util.getMonstersInRoom(rm);
+
         if(trigger_on_player > 0.0) {
+            if(only_one && monsters_in_room > 0)
+                return;
             timer = trigger_on_player;
         }
     }
@@ -32,16 +38,14 @@ public class MonsterSpawner {
     public void trigger() {
         int players_in_room = Util.getPlayersInRoom(rm);
         int monsters_in_room = Util.getMonstersInRoom(rm);
-        if(trigger_on_player < 0.0) {
+
+        if(regular_spawning) {
             // regular spawning
             timer = (base_timer + (Util.random.nextDouble() * base_timer_variance));
             timer /= (double)Math.max(players_in_room, 1);
         }
 
         if(players_in_room == 0)
-            return;
-
-        if(only_one && monsters_in_room > 0)
             return;
 
         if(normal_spawner) {
