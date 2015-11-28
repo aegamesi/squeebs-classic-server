@@ -92,7 +92,7 @@
     "gld": 30,
     "boss": false,
     "drops": [
-      {"item": 1105, "prob": 0.01},
+      {"item": 1105, "prob": 0.005},
       {"item": 1, "prob": 0.1},
       {"item": 2003, "prob": 0.005},
       {"item": 5003, "prob": 0.005}
