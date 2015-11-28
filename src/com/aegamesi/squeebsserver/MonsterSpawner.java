@@ -12,6 +12,7 @@ public class MonsterSpawner {
     public transient Database.MonsterInfo info;
     public transient double timer = -1;
 
+    public boolean disabled = false;
     public double base_timer = 1.5;
     public double base_timer_variance = 3.5;
     public double trigger_on_player = -1; // if a player entering the room triggers spawning
@@ -60,6 +61,7 @@ public class MonsterSpawner {
         int players_in_room = Util.getPlayersInRoom(rm);
         int monsters_in_room = Util.getMonstersInRoom(rm);
 
+        disabled = false;
         if(trigger_on_player > 0.0) {
             if(only_one && monsters_in_room > 0)
                 return;
@@ -85,6 +87,9 @@ public class MonsterSpawner {
             if(Util.random.nextInt(5 + (monsters_in_room * 4)) != 1)
                 return;
         }
+
+        if(disabled)
+            return;
 
         spawn();
     }

@@ -68,36 +68,46 @@ public class PhysicsLoop extends Thread {
                     Database.MonsterInfo info = Database.monsterInfo[m.t];
 
                     // Item drops / broadcast
-                    List<Database.Item> drops = new ArrayList<>();
-                    if(Util.probability(0.8)) {
-                        // gold
-                        Database.Item item = new Database.Item();
-                        item.amt = info.gld;
-                        item.t = 4;
-                        drops.add(item);
-                    }
-                    for(Database.MonsterDrop drop : info.drops) {
-                        if(Util.probability(drop.prob)) {
+                    if(m.hp < 1) {
+                        // only drop items if it's dead
+                        List<Database.Item> drops = new ArrayList<>();
+                        if (Util.probability(0.8)) {
+                            // gold
                             Database.Item item = new Database.Item();
-                            item.t = drop.item;
+                            item.amt = info.gld;
+                            item.t = 4;
                             drops.add(item);
                         }
-                    }
-                    for(Database.Item item : drops) {
-                        item.x = m.x;
-                        item.y = m.y;
-                        item.rm = m.rm;
-                        item.iid = Util.findSlot(Main.db.items);
-                        Main.db.items[item.iid] = item;
+                        for (Database.MonsterDrop drop : info.drops) {
+                            if (Util.probability(drop.prob)) {
+                                Database.Item item = new Database.Item();
+                                item.t = drop.item;
+                                drops.add(item);
+                            }
+                        }
+                        for (Database.Item item : drops) {
+                            item.x = m.x;
+                            item.y = m.y;
+                            item.rm = m.rm;
+                            item.iid = Util.findSlot(Main.db.items);
+                            Main.db.items[item.iid] = item;
 
-                        MessageOutCreateItem spawn = new MessageOutCreateItem();
-                        spawn.x = item.x;
-                        spawn.y = item.y;
-                        spawn.entity_id = m.id;
-                        spawn.t = item.t;
-                        spawn.iid = item.iid;
-                        spawn.amt = item.amt;
-                        Main.clientHandler.broadcast(spawn, item.rm, null);
+                            MessageOutCreateItem spawn = new MessageOutCreateItem();
+                            spawn.x = item.x;
+                            spawn.y = item.y;
+                            spawn.entity_id = m.id;
+                            spawn.t = item.t;
+                            spawn.iid = item.iid;
+                            spawn.amt = item.amt;
+                            Main.clientHandler.broadcast(spawn, item.rm, null);
+                        }
+
+                        // if it's a boss, disable room spawners
+                        if(info.boss) {
+                            for (MonsterSpawner spawner : Main.db.spawners)
+                                if(spawner.rm == m.rm)
+                                    spawner.disabled = true;
+                        }
                     }
 
                     // kill msg (after drop for entity_id)
