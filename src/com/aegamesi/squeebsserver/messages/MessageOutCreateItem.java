@@ -10,6 +10,7 @@ public class MessageOutCreateItem extends Message {
     public int y;
     public int amt;
     public int t;
+    public int entity_id = -1; // the entity id to spawn it at-- -1 by default.
 
     public MessageOutCreateItem() {
         type = 30;
@@ -22,7 +23,7 @@ public class MessageOutCreateItem extends Message {
         b.putShort((short) y);
         b.putShort((short) amt);
         b.putShort((short) t);
-
+        b.putInt(entity_id);
     }
 
     @Override
@@ -32,5 +33,6 @@ public class MessageOutCreateItem extends Message {
         y = b.getShort();
         amt = b.getShort();
         t = b.getShort();
+        entity_id = b.getInt();
     }
 }

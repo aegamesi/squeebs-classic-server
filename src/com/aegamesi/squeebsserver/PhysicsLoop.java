@@ -67,10 +67,6 @@ public class PhysicsLoop extends Thread {
                     Main.db.monsters[i] = null;
                     Database.MonsterInfo info = Database.monsterInfo[m.t];
 
-                    MessageOutKillMonster killMsg = new MessageOutKillMonster();
-                    killMsg.mid = i;
-                    Main.clientHandler.broadcast(killMsg, m.rm, null);
-
                     // Item drops / broadcast
                     List<Database.Item> drops = new ArrayList<>();
                     if(Util.probability(0.8)) {
@@ -105,7 +101,6 @@ public class PhysicsLoop extends Thread {
                         item.t = info.item5;
                         drops.add(item);
                     }
-
                     for(Database.Item item : drops) {
                         item.x = m.x;
                         item.y = m.y;
@@ -116,12 +111,17 @@ public class PhysicsLoop extends Thread {
                         MessageOutCreateItem spawn = new MessageOutCreateItem();
                         spawn.x = item.x;
                         spawn.y = item.y;
+                        spawn.entity_id = m.id;
                         spawn.t = item.t;
                         spawn.iid = item.iid;
                         spawn.amt = item.amt;
                         Main.clientHandler.broadcast(spawn, item.rm, null);
                     }
 
+                    // kill msg (after drop for entity_id)
+                    MessageOutKillMonster killMsg = new MessageOutKillMonster();
+                    killMsg.mid = i;
+                    Main.clientHandler.broadcast(killMsg, m.rm, null);
                 }
             }
 
