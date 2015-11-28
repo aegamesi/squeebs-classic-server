@@ -7,6 +7,7 @@ public class MonsterSpawner {
     public int y;
     public int rm;
     public int t;
+    public int preset = 0;
 
     public transient Database.MonsterInfo info;
     public transient double timer = -1;
@@ -21,8 +22,36 @@ public class MonsterSpawner {
     public void init() {
         info = Database.monsterInfo[t];
 
-        if(!regular_spawning)
+        if(preset == 0) {
+            base_timer = 1.5;
+            base_timer_variance = 3.5;
+            trigger_on_player = -1;
+            normal_spawner = true;
+            only_one = false;
+            regular_spawning = true;
+        }
+        if(preset == 1) {
+            // make
+            //"trigger_on_player": 0.5, "only_one": true, "regular_spawning": false
+            trigger_on_player = 0.5;
+            only_one = true;
+            regular_spawning = false;
             normal_spawner = false;
+        }
+        if(preset == 2) {
+            // bspwn
+            trigger_on_player = 50;
+            regular_spawning = false;
+            normal_spawner = false;
+        }
+        if(preset == 3) {
+            // cspwn
+            trigger_on_player = 10;
+            base_timer = 30;
+            base_timer_variance = 10;
+            normal_spawner = false;
+            regular_spawning = true;
+        }
 
         trigger();
     }
