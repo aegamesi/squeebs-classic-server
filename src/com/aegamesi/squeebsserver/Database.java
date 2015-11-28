@@ -129,16 +129,12 @@ public class Database {
         public int gld;
         public boolean boss = false;
 
-        public int item1 = 0;
-        public int item2 = 0;
-        public int item3 = 0;
-        public int item4 = 0;
-        public int item5 = 0;
-        public double per1 = 0;
-        public double per2 = 0;
-        public double per3 = 0;
-        public double per4 = 0;
-        public double per5 = 0;
+        public MonsterDrop[] drops;
+    }
+
+    public static class MonsterDrop {
+        public int item;
+        public double prob;
     }
 
     public static class User {

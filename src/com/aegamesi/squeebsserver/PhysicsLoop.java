@@ -76,30 +76,12 @@ public class PhysicsLoop extends Thread {
                         item.t = 4;
                         drops.add(item);
                     }
-                    if(info.item1 != 0 && Util.probability(info.per1)) {
-                        Database.Item item = new Database.Item();
-                        item.t = info.item1;
-                        drops.add(item);
-                    }
-                    if(info.item2 != 0 && Util.probability(info.per2)) {
-                        Database.Item item = new Database.Item();
-                        item.t = info.item2;
-                        drops.add(item);
-                    }
-                    if(info.item3 != 0 && Util.probability(info.per3)) {
-                        Database.Item item = new Database.Item();
-                        item.t = info.item3;
-                        drops.add(item);
-                    }
-                    if(info.item4 != 0 && Util.probability(info.per4)) {
-                        Database.Item item = new Database.Item();
-                        item.t = info.item4;
-                        drops.add(item);
-                    }
-                    if(info.item5 != 0 && Util.probability(info.per5)) {
-                        Database.Item item = new Database.Item();
-                        item.t = info.item5;
-                        drops.add(item);
+                    for(Database.MonsterDrop drop : info.drops) {
+                        if(Util.probability(drop.prob)) {
+                            Database.Item item = new Database.Item();
+                            item.t = drop.item;
+                            drops.add(item);
+                        }
                     }
                     for(Database.Item item : drops) {
                         item.x = m.x;
