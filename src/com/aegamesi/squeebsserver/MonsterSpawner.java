@@ -21,7 +21,7 @@ public class MonsterSpawner {
     public boolean regular_spawning = true; // whether to regularly schedule spawns
 
     public void init() {
-        info = Database.monsterInfo[t];
+        info = Database.monsterInfo.get(t);
 
         if(preset == 0) {
             base_timer = 1.5;

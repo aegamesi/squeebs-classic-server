@@ -328,6 +328,10 @@ public class ClientHandler {
     }
 
     public void updatePlayerRoom(Client client) throws IOException {
+        // tell client the room name
+        Database.RoomInfo rmInfo = Database.roomInfo.get(client.user.rm);
+        client.sendMessage(MessageOutFloatingMessage.build(rmInfo.name, 64, 32, 150, Color.YELLOW, Color.DARK_GRAY));
+
         MessageOutNewPlayer sourceNewPlayerMsg = new MessageOutNewPlayer();
         sourceNewPlayerMsg.playerid = client.playerid;
         sourceNewPlayerMsg.username = client.user.username;

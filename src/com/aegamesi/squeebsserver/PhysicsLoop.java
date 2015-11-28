@@ -65,7 +65,7 @@ public class PhysicsLoop extends Thread {
                 m.ttl -= dt;
                 if (m.hp < 1 || m.ttl < 0.0f) {
                     Main.db.monsters[i] = null;
-                    Database.MonsterInfo info = Database.monsterInfo[m.t];
+                    Database.MonsterInfo info = Database.monsterInfo.get(m.t);
 
                     // Item drops / broadcast
                     if(m.hp < 1) {
