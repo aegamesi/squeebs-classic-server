@@ -17,7 +17,8 @@ public class Database {
     public transient MonsterSpawner[] spawners = new MonsterSpawner[0];
 
     // encyclopedia
-    public static MonsterInfo[] monsterInfo;
+    public static Map<Integer, MonsterInfo> monsterInfo = new HashMap<>();
+    public static Map<Integer, RoomInfo> roomInfo = new HashMap<>();
 
     public transient File dbDirectory;
     public transient Gson gson;
@@ -27,8 +28,20 @@ public class Database {
         gson = new Gson();
 
         BufferedReader jsonReader;
+
+        // monster info
         jsonReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("monsters.json")));
-        monsterInfo = gson.fromJson(jsonReader, MonsterInfo[].class);
+        MonsterInfo[] monsterInfoArr = gson.fromJson(jsonReader, MonsterInfo[].class);
+        for(MonsterInfo info : monsterInfoArr)
+            monsterInfo.put(info.id, info);
+
+        // rooms
+        jsonReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("rooms.json")));
+        RoomInfo[] roomInfoArr = gson.fromJson(jsonReader, RoomInfo[].class);
+        for(RoomInfo info : roomInfoArr)
+            roomInfo.put(info.id, info);
+
+        // spawners
         jsonReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("spawners.json")));
         spawners = gson.fromJson(jsonReader, MonsterSpawner[].class);
     }
@@ -130,6 +143,12 @@ public class Database {
         public boolean boss = false;
 
         public MonsterDrop[] drops;
+    }
+
+    public static class RoomInfo {
+        public int id;
+        public String client_name;
+        public String name;
     }
 
     public static class MonsterDrop {

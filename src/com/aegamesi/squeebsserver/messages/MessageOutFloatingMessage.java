@@ -18,6 +18,10 @@ public class MessageOutFloatingMessage extends Message {
         type = 32;
     }
 
+    public static MessageOutFloatingMessage build(String str, int x, int y, int time) {
+        return build(str, x, y, time, Color.white, Color.black);
+    }
+
     public static MessageOutFloatingMessage build(String str, int x, int y, int time, Color inner, Color outer) {
         MessageOutFloatingMessage msg = new MessageOutFloatingMessage();
         msg.msg = str;
