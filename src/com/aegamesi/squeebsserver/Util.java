@@ -54,4 +54,9 @@ public class Util {
                 n++;
         return n;
     }
+    public static boolean probability(double r) {
+        // r between 0.0 and 1.0...
+        double comp = random.nextDouble();
+        return comp < r;
+    }
 }

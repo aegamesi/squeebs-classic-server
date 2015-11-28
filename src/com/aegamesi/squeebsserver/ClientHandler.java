@@ -309,11 +309,12 @@ public class ClientHandler {
                 MessageInTakeItem msg = new MessageInTakeItem();
                 msg.read(sender.buffer);
 
-                if (Main.db.items[msg.iid] != null) {
+                Database.Item item = Main.db.items[msg.iid];
+                if (item != null && sender.user.rm == item.rm) {
                     MessageOutTakeItem echoMsg = new MessageOutTakeItem();
                     echoMsg.iid = msg.iid;
                     echoMsg.user = sender.playerid;
-                    broadcast(echoMsg, Main.db.items[msg.iid].rm, null);
+                    broadcast(echoMsg, item.rm, null);
 
                     Main.db.items[msg.iid] = null;
                 }

@@ -1,9 +1,12 @@
 package com.aegamesi.squeebsserver;
 
+import com.aegamesi.squeebsserver.messages.MessageOutCreateItem;
 import com.aegamesi.squeebsserver.messages.MessageOutKillMonster;
 import com.aegamesi.squeebsserver.messages.MessageOutMoveMonster;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PhysicsLoop extends Thread {
     public float save_timer = 300.0f;
@@ -62,12 +65,63 @@ public class PhysicsLoop extends Thread {
                 m.ttl -= dt;
                 if (m.hp < 1 || m.ttl < 0.0f) {
                     Main.db.monsters[i] = null;
+                    Database.MonsterInfo info = Database.monsterInfo[m.t];
 
                     MessageOutKillMonster killMsg = new MessageOutKillMonster();
                     killMsg.mid = i;
                     Main.clientHandler.broadcast(killMsg, m.rm, null);
 
-                    // TODO do item drops / broadcast
+                    // Item drops / broadcast
+                    List<Database.Item> drops = new ArrayList<>();
+                    if(Util.probability(0.8)) {
+                        // gold
+                        Database.Item item = new Database.Item();
+                        item.amt = info.gld;
+                        item.t = 4;
+                        drops.add(item);
+                    }
+                    if(info.item1 != 0 && Util.probability(info.per1)) {
+                        Database.Item item = new Database.Item();
+                        item.t = info.item1;
+                        drops.add(item);
+                    }
+                    if(info.item2 != 0 && Util.probability(info.per2)) {
+                        Database.Item item = new Database.Item();
+                        item.t = info.item2;
+                        drops.add(item);
+                    }
+                    if(info.item3 != 0 && Util.probability(info.per3)) {
+                        Database.Item item = new Database.Item();
+                        item.t = info.item3;
+                        drops.add(item);
+                    }
+                    if(info.item4 != 0 && Util.probability(info.per4)) {
+                        Database.Item item = new Database.Item();
+                        item.t = info.item4;
+                        drops.add(item);
+                    }
+                    if(info.item5 != 0 && Util.probability(info.per5)) {
+                        Database.Item item = new Database.Item();
+                        item.t = info.item5;
+                        drops.add(item);
+                    }
+
+                    for(Database.Item item : drops) {
+                        item.x = m.x;
+                        item.y = m.y;
+                        item.rm = m.rm;
+                        item.iid = Util.findSlot(Main.db.items);
+                        Main.db.items[item.iid] = item;
+
+                        MessageOutCreateItem spawn = new MessageOutCreateItem();
+                        spawn.x = item.x;
+                        spawn.y = item.y;
+                        spawn.t = item.t;
+                        spawn.iid = item.iid;
+                        spawn.amt = item.amt;
+                        Main.clientHandler.broadcast(spawn, item.rm, null);
+                    }
+
                 }
             }
 

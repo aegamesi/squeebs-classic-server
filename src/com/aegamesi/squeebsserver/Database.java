@@ -112,7 +112,7 @@ public class Database {
         public int t;
         public int x;
         public int y;
-        public int amt;
+        public int amt = 1;
         public int rm;
 
         public float ttl = 300.0f;
