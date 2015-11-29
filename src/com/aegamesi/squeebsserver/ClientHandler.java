@@ -384,10 +384,21 @@ public class ClientHandler {
         }
     }
 
+    public Client getClientByUsername(String username) {
+        for (Client player : players) {
+            if (player == null || player.user == null)
+                continue;
+
+            if(player.user.username.equalsIgnoreCase(username))
+                return player;
+        }
+        return null;
+    }
+
     public int broadcast(Message message, int rm, Client not_client) {
         int num = 0;
         for(Client player : players) {
-            if (player == null)
+            if (player == null || player.user == null)
                 continue;
 
             if(rm != -1 && player.user.rm != rm)

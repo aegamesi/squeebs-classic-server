@@ -1,9 +1,8 @@
 package com.aegamesi.squeebsserver;
 
 import com.aegamesi.squeebsserver.messages.MessageOutServerMessage;
-import com.aegamesi.squeebsserver.messages.MessageOutShutdown;
+import com.aegamesi.squeebsserver.messages.MessageOutKick;
 
-import javax.activation.CommandInfo;
 import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,8 +41,21 @@ public class CommandHandler {
                 out.print("Stopping server.");
                 Main.db.save();
 
-                Main.clientHandler.broadcast(new MessageOutShutdown(), -1, null);
+                Main.clientHandler.broadcast(MessageOutKick.build("The server has shut down."), -1, null);
                 System.exit(0);
+            }
+        });
+        addCommand(new String[]{"kick"}, MODERATOR, 1, 1, new Command() {
+            @Override
+            public void run(Client sender, OutputHandler out, String cmd, String[] args) throws IOException {
+                String username = args[1].trim();
+                Client player = Main.clientHandler.getClientByUsername(username);
+                if(player == null) {
+                    out.print("Player not found.");
+                } else {
+                    out.print("Kicking " + player.user.username + ".");
+                    player.sendMessage(MessageOutKick.build("You have been kicked."));
+                }
             }
         });
         addCommand(new String[]{"uptime"}, MODERATOR, 0, 0, new Command() {
@@ -84,7 +96,7 @@ public class CommandHandler {
     }
 
     public interface Command {
-        void run(Client sender, OutputHandler out, String cmd, String[] args);
+        void run(Client sender, OutputHandler out, String cmd, String[] args) throws IOException;
     }
 
     public static void runCommand(String line, final Client sender) {
@@ -129,7 +141,11 @@ public class CommandHandler {
             return;
         }
 
-        i.command.run(sender, outputHandler, line, line.split(" "));
+        try {
+            i.command.run(sender, outputHandler, line, line.split(" "));
+        } catch(IOException e) {
+
+        }
     }
 
     public static void addCommand(String[] names, int permission, int min, int max, Command command) {
