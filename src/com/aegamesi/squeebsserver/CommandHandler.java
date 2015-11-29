@@ -1,5 +1,7 @@
 package com.aegamesi.squeebsserver;
 
+import com.aegamesi.squeebsserver.messages.MessageOutChangeRoom;
+import com.aegamesi.squeebsserver.messages.MessageOutPosition;
 import com.aegamesi.squeebsserver.messages.MessageOutServerMessage;
 import com.aegamesi.squeebsserver.messages.MessageOutKick;
 
@@ -43,6 +45,31 @@ public class CommandHandler {
 
                 Main.clientHandler.broadcast(MessageOutKick.build("The server has shut down."), -1, null);
                 System.exit(0);
+            }
+        });
+        addCommand(new String[]{"grab"}, ADMIN, 1, 1, new Command() {
+            @Override
+            public void run(Client sender, OutputHandler out, String cmd, String[] args) throws IOException {
+                if(sender == null)
+                    return;
+
+                String username = args[1].trim();
+                Client player = Main.clientHandler.getClientByUsername(username);
+                if(player == null) {
+                    out.print("Player not found.");
+                } else {
+                    out.print("Grabbing " + player.user.username + ".");
+                    if(player.user.rm != sender.user.rm) {
+                        MessageOutChangeRoom changeRoom = new MessageOutChangeRoom();
+                        changeRoom.rm = sender.user.rm;
+                        player.sendMessage(changeRoom);
+                    }
+                    MessageOutPosition newPos = new MessageOutPosition();
+                    newPos.x = sender.user.x;
+                    newPos.y = sender.user.y;
+                    newPos.rm = sender.user.rm;
+                    player.sendMessage(newPos);
+                }
             }
         });
         addCommand(new String[]{"kick"}, MODERATOR, 1, 1, new Command() {

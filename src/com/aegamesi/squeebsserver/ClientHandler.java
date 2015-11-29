@@ -174,7 +174,17 @@ public class ClientHandler {
                 sender.user.rm = msg.rm;
 
                 // Echo to other players
-                broadcast(msg, sender.user.rm, sender);
+                MessageOutPosition echoMsg = new MessageOutPosition();
+                echoMsg.userid = msg.userid;
+                echoMsg.x = msg.x;
+                echoMsg.y = msg.y;
+                echoMsg.spr = msg.spr;
+                echoMsg.img = msg.img;
+                echoMsg.spr_dir = msg.spr_dir;
+                echoMsg.move = msg.move;
+                echoMsg.jmp = msg.jmp;
+                echoMsg.rm = msg.rm;
+                broadcast(echoMsg, sender.user.rm, sender);
             }
             break;
 
