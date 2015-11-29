@@ -55,6 +55,22 @@ public class CommandHandler {
                 } else {
                     out.print("Kicking " + player.user.username + ".");
                     player.sendMessage(MessageOutKick.build("You have been kicked."));
+                    player.disconnect();
+                }
+            }
+        });
+        addCommand(new String[]{"ban"}, MODERATOR, 1, 1, new Command() {
+            @Override
+            public void run(Client sender, OutputHandler out, String cmd, String[] args) throws IOException {
+                String username = args[1].trim();
+                Client player = Main.clientHandler.getClientByUsername(username);
+                if(player == null) {
+                    out.print("Player not found.");
+                } else {
+                    out.print("Kicking/banning " + player.user.username + ".");
+                    player.user.status = 2;
+                    player.sendMessage(MessageOutKick.build("You have been banned from the server."));
+                    player.disconnect();
                 }
             }
         });

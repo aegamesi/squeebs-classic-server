@@ -29,6 +29,7 @@ public class ClientHandler {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Your client version is out of date. Please redownload.";
                     sender.sendMessage(response);
+                    sender.disconnect();
                     break;
                 }
 
@@ -64,18 +65,23 @@ public class ClientHandler {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "This account is already logged in.";
                     sender.sendMessage(response);
-                    break;
-                } else if (user.status == 2) {
-                    // user is banned
-                    MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "This account is banned.";
-                    sender.sendMessage(response);
+                    sender.disconnect();
                     break;
                 } else if (!user.password.equals(msg.password)) {
                     // invalid password
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Incorrect password.";
                     sender.sendMessage(response);
+                    sender.disconnect();
+                    break;
+                } else if (user.status == 2) {
+                    // user is banned
+                    MessageOutConnectResponse response = new MessageOutConnectResponse();
+                    response.message = "This account is banned.";
+                    sender.sendMessage(response);
+                    sender.disconnect();
+
+                    Logger.log("Banned user " + user.username + " tried to log in.");
                     break;
                 }
 
@@ -87,6 +93,7 @@ public class ClientHandler {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
                     response.message = "Player cap reached. Try again later.";
                     sender.sendMessage(response);
+                    sender.disconnect();
                     break;
                 }
                 Logger.log("Player " + user.username + " logged on. ID: " + playerid);
@@ -336,8 +343,7 @@ public class ClientHandler {
         sourceNewPlayerMsg.playerid = client.playerid;
         sourceNewPlayerMsg.username = client.user.username;
         sourceNewPlayerMsg.admin = client.user.rank;
-        for (int i = 0; i < players.length; i++) {
-            Client player = players[i];
+        for (Client player : players) {
             if (player == null || client == player)
                 continue;
 

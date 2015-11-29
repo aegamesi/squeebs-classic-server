@@ -4,7 +4,6 @@ import com.aegamesi.squeebsserver.messages.MessageOutCreateItem;
 import com.aegamesi.squeebsserver.messages.MessageOutKillMonster;
 import com.aegamesi.squeebsserver.messages.MessageOutMoveMonster;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
