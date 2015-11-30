@@ -253,14 +253,28 @@ public class ClientHandler {
             break;
 
             case 9: {
-                // change room
-                MessageInChangeRoom msg = new MessageInChangeRoom();
+                // use portal
+                MessageInUsePortal msg = new MessageInUsePortal();
                 msg.read(sender.buffer);
 
-                // okay, whatever
-                sender.user.rm = msg.rm;
+                Database.PortalInfo portal = null;
+                if(msg.portal_id == -1) {
+                    portal = Database.portalInfo.get(1); // respawn
+                    sender.sendMessage(MessageOutServerMessage.build("Oh dear, you are dead!", Color.red));
+                } else {
+                    Database.PortalInfo source = Database.portalInfo.get(msg.portal_id);
+                    if (source == null || source.rm != sender.user.rm)
+                        break;
+                    portal = Database.portalInfo.get(source.target);
+                }
+
+                sender.user.rm = portal.rm;
+                sender.user.x = portal.x;
+                sender.user.y = portal.y;
                 MessageOutChangeRoom reply = new MessageOutChangeRoom();
-                reply.rm = msg.rm;
+                reply.rm = portal.rm;
+                reply.x = portal.x;
+                reply.y = portal.y;
                 sender.sendMessage(reply);
 
                 // echo to other players
@@ -270,7 +284,7 @@ public class ClientHandler {
 
                 // tell monster spawners
                 for (MonsterSpawner spawner : Main.db.spawners)
-                    if(msg.rm == spawner.rm)
+                    if(portal.rm == spawner.rm)
                         spawner.playerEntered();
             }
             break;

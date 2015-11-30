@@ -47,7 +47,7 @@ public class CommandHandler {
                 System.exit(0);
             }
         });
-        addCommand(new String[]{"grab"}, ADMIN, 1, 1, new Command() {
+        addCommand(new String[]{"grab", "tphere"}, ADMIN, 1, 1, new Command() {
             @Override
             public void run(Client sender, OutputHandler out, String cmd, String[] args) throws IOException {
                 if(sender == null)
@@ -62,13 +62,19 @@ public class CommandHandler {
                     if(player.user.rm != sender.user.rm) {
                         MessageOutChangeRoom changeRoom = new MessageOutChangeRoom();
                         changeRoom.rm = sender.user.rm;
+                        changeRoom.x = sender.user.x;
+                        changeRoom.y = sender.user.y;
                         player.sendMessage(changeRoom);
+                    } else {
+                        MessageOutPosition newPos = new MessageOutPosition();
+                        newPos.x = sender.user.x;
+                        newPos.y = sender.user.y;
+                        newPos.rm = sender.user.rm;
+                        player.sendMessage(newPos);
                     }
-                    MessageOutPosition newPos = new MessageOutPosition();
-                    newPos.x = sender.user.x;
-                    newPos.y = sender.user.y;
-                    newPos.rm = sender.user.rm;
-                    player.sendMessage(newPos);
+                    player.user.rm = sender.user.rm;
+                    player.user.x = sender.user.x;
+                    player.user.y = sender.user.y;
                 }
             }
         });

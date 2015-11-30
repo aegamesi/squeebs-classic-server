@@ -19,6 +19,7 @@ public class Database {
     // encyclopedia
     public static Map<Integer, MonsterInfo> monsterInfo = new HashMap<>();
     public static Map<Integer, RoomInfo> roomInfo = new HashMap<>();
+    public static Map<Integer, PortalInfo> portalInfo = new HashMap<>();
 
     public transient File dbDirectory;
     public transient Gson gson;
@@ -40,6 +41,12 @@ public class Database {
         RoomInfo[] roomInfoArr = gson.fromJson(jsonReader, RoomInfo[].class);
         for(RoomInfo info : roomInfoArr)
             roomInfo.put(info.id, info);
+
+        // portals
+        jsonReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("portals.json")));
+        PortalInfo[] portalInfoArr = gson.fromJson(jsonReader, PortalInfo[].class);
+        for(PortalInfo info : portalInfoArr)
+            portalInfo.put(info.id, info);
 
         // spawners
         jsonReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("spawners.json")));
@@ -129,6 +136,14 @@ public class Database {
         public int rm;
 
         public float ttl = 300.0f;
+    }
+
+    public static class PortalInfo {
+        public int x;
+        public int y;
+        public int rm;
+        public int id;
+        public int target;
     }
 
     public static class MonsterInfo {
