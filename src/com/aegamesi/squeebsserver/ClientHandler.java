@@ -123,6 +123,12 @@ public class ClientHandler {
                 sender.sendMessage(MessageOutServerMessage.build(Util.motd, Color.white));
                 String motd_quote = "\"" + Util.motd_quotes[Util.random.nextInt(Util.motd_quotes.length)] + "\"";
                 sender.sendMessage(MessageOutServerMessage.build(motd_quote, Color.white));
+
+                if(newAccount) {
+                    // send how to play
+                    for(String line : Util.guide)
+                        MessageOutServerMessage.build(line, Color.lightGray);
+                }
             }
             break;
             case 2: {

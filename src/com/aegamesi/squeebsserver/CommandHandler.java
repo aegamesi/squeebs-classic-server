@@ -38,6 +38,13 @@ public class CommandHandler {
                 out.print("Saved database.");
             }
         });
+        addCommand(new String[]{"guide"}, PLAYER, 0, 0, new Command() {
+            @Override
+            public void run(Client sender, OutputHandler out, String cmd, String[] args) throws IOException {
+                for(String line : Util.guide)
+                    out.print(line);
+            }
+        });
         addCommand(new String[]{"shutdown", "stop"}, ADMIN, 0, 0, new Command() {
             public void run(Client sender, OutputHandler out, String cmd, String[] args) {
                 out.print("Stopping server.");
