@@ -112,6 +112,11 @@ public class ClientHandler {
                 pidMessage.playerid = playerid;
                 sender.sendMessage(pidMessage);
 
+                if(newAccount)
+                    broadcast(MessageOutServerMessage.build("Welcome " + user.username + " to Squeebs!", Color.yellow), -1, null);
+                else
+                    broadcast(MessageOutServerMessage.build(user.username + " has logged on.", Color.yellow), -1, null);
+
                 updatePlayerRoom(sender);
 
                 // send motd

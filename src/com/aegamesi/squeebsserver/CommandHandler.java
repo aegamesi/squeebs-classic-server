@@ -47,7 +47,7 @@ public class CommandHandler {
                 System.exit(0);
             }
         });
-        addCommand(new String[]{"grab", "tphere"}, ADMIN, 1, 1, new Command() {
+        addCommand(new String[]{"grab", "tphere"}, MODERATOR, 1, 1, new Command() {
             @Override
             public void run(Client sender, OutputHandler out, String cmd, String[] args) throws IOException {
                 if(sender == null)
@@ -59,22 +59,42 @@ public class CommandHandler {
                     out.print("Player not found.");
                 } else {
                     out.print("Grabbing " + player.user.username + ".");
-                    if(player.user.rm != sender.user.rm) {
-                        MessageOutChangeRoom changeRoom = new MessageOutChangeRoom();
-                        changeRoom.rm = sender.user.rm;
-                        changeRoom.x = sender.user.x;
-                        changeRoom.y = sender.user.y;
-                        player.sendMessage(changeRoom);
-                    } else {
-                        MessageOutPosition newPos = new MessageOutPosition();
-                        newPos.x = sender.user.x;
-                        newPos.y = sender.user.y;
-                        newPos.rm = sender.user.rm;
-                        player.sendMessage(newPos);
-                    }
+
+                    MessageOutChangeRoom changeRoom = new MessageOutChangeRoom();
+                    changeRoom.rm = sender.user.rm;
+                    changeRoom.x = sender.user.x;
+                    changeRoom.y = sender.user.y;
+                    player.sendMessage(changeRoom);
+                    player.sendMessage(MessageOutServerMessage.build(sender.user.username + " has teleported you!", Color.lightGray));
+
                     player.user.rm = sender.user.rm;
                     player.user.x = sender.user.x;
                     player.user.y = sender.user.y;
+                }
+            }
+        });
+        addCommand(new String[]{"tp"}, MODERATOR, 1, 1, new Command() {
+            @Override
+            public void run(Client sender, OutputHandler out, String cmd, String[] args) throws IOException {
+                if(sender == null)
+                    return;
+
+                String username = args[1].trim();
+                Client player = Main.clientHandler.getClientByUsername(username);
+                if(player == null) {
+                    out.print("Player not found.");
+                } else {
+                    out.print("Teleporting to " + player.user.username + ".");
+
+                    MessageOutChangeRoom changeRoom = new MessageOutChangeRoom();
+                    changeRoom.rm = player.user.rm;
+                    changeRoom.x = player.user.x;
+                    changeRoom.y = player.user.y;
+                    sender.sendMessage(changeRoom);
+
+                    sender.user.rm = player.user.rm;
+                    sender.user.x = player.user.x;
+                    sender.user.y = player.user.y;
                 }
             }
         });
