@@ -29,6 +29,14 @@ public class PhysicsLoop extends Thread {
                 Main.db.save();
             }
 
+            // kick players for timeout (more than 30 seconds no messages)
+            for (Client c : Main.clientHandler.clients) {
+                if((System.currentTimeMillis() - c.lastMessageTime) > (30 * 1000)) {
+                    Logger.log(c + " pinged out.");
+                    c.disconnect();
+                }
+            }
+
             // monster spawning
             for (MonsterSpawner spawner : Main.db.spawners) {
                 if(spawner.timer > 0.0) {

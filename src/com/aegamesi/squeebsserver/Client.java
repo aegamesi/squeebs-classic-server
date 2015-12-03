@@ -23,6 +23,7 @@ public class Client extends Thread {
     public MessageInAppearance cachedAppearance = new MessageInAppearance();
     public int playerid = -1;
     private boolean running = true;
+    public long lastMessageTime = 0;
 
     public Client(ClientHandler handler, Socket socket) {
         this.socket = socket;
@@ -34,6 +35,7 @@ public class Client extends Thread {
             socket.setTcpNoDelay(true);
             os = new LittleEndianOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             is = new LittleEndianInputStream(new BufferedInputStream(socket.getInputStream()));
+            lastMessageTime = System.currentTimeMillis();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,6 +60,7 @@ public class Client extends Thread {
                     total_read += just_read;
                 }
 
+                lastMessageTime = System.currentTimeMillis();
                 Main.bytes_received += messageSize + 2 + 1;
                 buffer.put(msg);
                 buffer.position(0);
