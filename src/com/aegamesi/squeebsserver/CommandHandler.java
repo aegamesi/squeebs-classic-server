@@ -137,11 +137,16 @@ public class CommandHandler {
         addCommand(new String[]{"uptime"}, PLAYER, 0, 0, new Command() {
             public void run(Client sender, OutputHandler out, String cmd, String[] args) {
                 long t_millis = System.currentTimeMillis() - Main.program_start_time;
-                long t_seconds = (t_millis / (1000)) % 60;
-                long t_minutes = (t_millis / (1000 * 60)) % 60;
-                long t_hours = (t_millis / (1000 * 60 * 60)) % 24;
-                long t_days = (t_millis / (1000 * 60 * 60 * 24));
-                out.print("Uptime: " + t_days + "d " + t_hours + "h " + t_minutes + "m " + t_seconds + "s");
+                out.print("Uptime: " + Util.formatDuration(t_millis));
+            }
+        });
+        addCommand(new String[]{"playtime"}, PLAYER, 0, 0, new Command() {
+            public void run(Client sender, OutputHandler out, String cmd, String[] args) {
+                if(sender == null)
+                    return;
+
+                long t_millis = sender.user.playTime + (System.currentTimeMillis() - sender.user.lastLogin);
+                out.print("Total Playtime: " + Util.formatDuration(t_millis));
             }
         });
         addCommand(new String[]{"players", "online"}, PLAYER, 0, 0, new Command() {

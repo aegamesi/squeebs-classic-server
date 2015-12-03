@@ -60,4 +60,11 @@ public class Util {
         double comp = random.nextDouble();
         return comp < r;
     }
+    public static String formatDuration(long t_millis) {
+        long t_seconds = (t_millis / (1000)) % 60;
+        long t_minutes = (t_millis / (1000 * 60)) % 60;
+        long t_hours = (t_millis / (1000 * 60 * 60)) % 24;
+        long t_days = (t_millis / (1000 * 60 * 60 * 24));
+        return t_days + "d " + t_hours + "h " + t_minutes + "m " + t_seconds + "s";
+    }
 }

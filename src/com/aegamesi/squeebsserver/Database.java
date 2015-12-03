@@ -176,6 +176,9 @@ public class Database {
         public String password;
         public int rank = 0; // 0 player, 1 admin, 2 mod
         public int status = 0; // 0 offline, 1 online, 2 banned?
+        public long firstLogin = 0;
+        public long lastLogin = 0;
+        public long playTime = 0;
 
         public int x = 80;
         public int y = 80;

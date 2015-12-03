@@ -56,6 +56,7 @@ public class ClientHandler {
                     user = new Database.User();
                     user.username = username;
                     user.password = msg.password;
+                    user.firstLogin = System.currentTimeMillis();
                     Main.db.users.add(user);
 
                     Logger.log("Created a new account " + username + " with password " + user.password);
@@ -86,6 +87,7 @@ public class ClientHandler {
                 }
 
                 user.status = 1; // set to online
+                user.lastLogin = System.currentTimeMillis();
                 sender.user = user;
 
                 int playerid = Util.findSlot(players);
