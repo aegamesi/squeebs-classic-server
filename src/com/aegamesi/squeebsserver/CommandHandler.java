@@ -134,7 +134,7 @@ public class CommandHandler {
                 }
             }
         });
-        addCommand(new String[]{"uptime"}, MODERATOR, 0, 0, new Command() {
+        addCommand(new String[]{"uptime"}, PLAYER, 0, 0, new Command() {
             public void run(Client sender, OutputHandler out, String cmd, String[] args) {
                 long t_millis = System.currentTimeMillis() - Main.program_start_time;
                 long t_seconds = (t_millis / (1000)) % 60;

@@ -113,9 +113,9 @@ public class ClientHandler {
                 sender.sendMessage(pidMessage);
 
                 if(newAccount)
-                    broadcast(MessageOutServerMessage.build("Welcome " + user.username + " to Squeebs!", Color.yellow), -1, null);
+                    broadcast(MessageOutServerMessage.build("Welcome " + user.username + " to Squeebs!", Color.yellow), -1, sender);
                 else
-                    broadcast(MessageOutServerMessage.build(user.username + " has logged on.", Color.yellow), -1, null);
+                    broadcast(MessageOutServerMessage.build(user.username + " has logged on.", Color.yellow), -1, sender);
 
                 updatePlayerRoom(sender);
 
@@ -127,7 +127,7 @@ public class ClientHandler {
                 if(newAccount) {
                     // send how to play
                     for(String line : Util.guide)
-                        MessageOutServerMessage.build(line, Color.lightGray);
+                        sender.sendMessage(MessageOutServerMessage.build(line, Color.lightGray));
                 }
             }
             break;
