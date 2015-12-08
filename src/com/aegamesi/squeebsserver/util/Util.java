@@ -4,10 +4,7 @@ import com.aegamesi.squeebsserver.Main;
 import com.aegamesi.squeebsserver.squeebs.Database;
 
 import java.awt.*;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.Random;
 
 public class Util {
@@ -35,6 +32,18 @@ public class Util {
         BufferedWriter writer = new BufferedWriter(new FileWriter(f));
         writer.write(s);
         writer.close();
+    }
+
+    public static String inputStreamToString(InputStream inputStream, String charsetName)
+            throws IOException {
+        StringBuilder builder = new StringBuilder();
+        InputStreamReader reader = new InputStreamReader(inputStream, charsetName);
+        char[] buffer = new char[4 * 1024];
+        int length;
+        while ((length = reader.read(buffer)) != -1) {
+            builder.append(buffer, 0, length);
+        }
+        return builder.toString();
     }
 
     public static int getMonstersInRoom(int rm) {
