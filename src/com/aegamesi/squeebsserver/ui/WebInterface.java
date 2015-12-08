@@ -46,20 +46,13 @@ public class WebInterface extends BasicAuthHTTPD {
             }
 
             /* DYNAMIC */
-            if (session.getUri().equalsIgnoreCase("/api/log_history")) {
+            if (session.getUri().equalsIgnoreCase("/api/poll")) {
                 try {
-                    if (session.getParms().containsKey("start") && session.getParms().containsKey("count")) {
-                        int start = Integer.parseInt(session.getParms().get("start"));
-                        int count = Integer.parseInt(session.getParms().get("count"));
-                    }
-                } catch (NumberFormatException e) {
-                }
-            }
-            if (session.getUri().equalsIgnoreCase("/api/log")) {
-                try {
-                    int start = Math.max(0, Logger.logHistory.size() - 20);
+                    int start = -20;
                     if (session.getParms().containsKey("start"))
                         start = Integer.parseInt(session.getParms().get("start"));
+                    if(start < 0)
+                        start = Math.max(0, start + Logger.logHistory.size());
 
                     int count = Logger.logHistory.size() - start;
                     JsonArray linesArray = new JsonArray();
