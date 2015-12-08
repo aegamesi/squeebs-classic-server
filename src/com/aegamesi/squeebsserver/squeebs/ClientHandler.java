@@ -1,5 +1,8 @@
-package com.aegamesi.squeebsserver;
+package com.aegamesi.squeebsserver.squeebs;
 
+import com.aegamesi.squeebsserver.util.Logger;
+import com.aegamesi.squeebsserver.Main;
+import com.aegamesi.squeebsserver.util.Util;
 import com.aegamesi.squeebsserver.messages.*;
 
 import java.awt.*;

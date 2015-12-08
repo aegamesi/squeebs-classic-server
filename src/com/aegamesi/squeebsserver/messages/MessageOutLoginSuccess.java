@@ -1,7 +1,7 @@
 package com.aegamesi.squeebsserver.messages;
 
 
-import com.aegamesi.squeebsserver.Database;
+import com.aegamesi.squeebsserver.squeebs.Database;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

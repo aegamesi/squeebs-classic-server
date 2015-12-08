@@ -1,6 +1,6 @@
 package com.aegamesi.squeebsserver.messages;
 
-import com.aegamesi.squeebsserver.Util;
+import com.aegamesi.squeebsserver.util.Util;
 
 import java.awt.*;
 import java.io.IOException;

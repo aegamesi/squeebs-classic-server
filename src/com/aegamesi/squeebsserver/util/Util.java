@@ -1,4 +1,7 @@
-package com.aegamesi.squeebsserver;
+package com.aegamesi.squeebsserver.util;
+
+import com.aegamesi.squeebsserver.Main;
+import com.aegamesi.squeebsserver.squeebs.Database;
 
 import java.awt.*;
 import java.io.BufferedWriter;

@@ -1,4 +1,4 @@
-package com.aegamesi.squeebsserver;
+package com.aegamesi.squeebsserver.util;
 
 public class Base64 {
     /**

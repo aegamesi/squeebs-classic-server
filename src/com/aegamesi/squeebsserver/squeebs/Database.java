@@ -1,5 +1,6 @@
-package com.aegamesi.squeebsserver;
+package com.aegamesi.squeebsserver.squeebs;
 
+import com.aegamesi.squeebsserver.util.Util;
 import com.aegamesi.squeebsserver.messages.Message;
 import com.google.gson.Gson;
 

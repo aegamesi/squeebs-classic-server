@@ -1,5 +1,6 @@
-package com.aegamesi.squeebsserver;
+package com.aegamesi.squeebsserver.ui;
 
+import com.aegamesi.squeebsserver.util.Base64;
 import fi.iki.elonen.NanoHTTPD;
 
 public abstract class BasicAuthHTTPD extends NanoHTTPD {

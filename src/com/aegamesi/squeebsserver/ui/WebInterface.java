@@ -1,8 +1,6 @@
-package com.aegamesi.squeebsserver;
+package com.aegamesi.squeebsserver.ui;
 
-import fi.iki.elonen.NanoHTTPD;
-
-import java.util.Map;
+import com.aegamesi.squeebsserver.util.Logger;
 
 public class WebInterface extends BasicAuthHTTPD {
 

@@ -1,5 +1,6 @@
-package com.aegamesi.squeebsserver;
+package com.aegamesi.squeebsserver.util;
 
+import com.aegamesi.squeebsserver.squeebs.CommandHandler;
 import com.aegamesi.squeebsserver.ui.CommandTextBox;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
@@ -10,7 +11,6 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
