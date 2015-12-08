@@ -8,6 +8,7 @@ import java.net.Socket;
 public class Main {
     public static final int PROTOCOL_VERSION = 5;
     public static final int PORT = 12564;
+    public static final int WEB_PORT = 12566;
     public static final int PLAYER_MAX = 20;
     public static final int TPS = 20;
 
@@ -19,6 +20,7 @@ public class Main {
     public static Database db;
     public static ClientHandler clientHandler;
     public static PhysicsLoop physicsLoop;
+    public static WebInterface webInterface;
 
     public static void main(String[] args) throws IOException {
         // setup gui
@@ -26,6 +28,11 @@ public class Main {
         Logger.log("Starting up Squeebs Java Server...");
         program_start_time = System.currentTimeMillis();
 
+        // setup web interface
+        webInterface = new WebInterface(WEB_PORT);
+        webInterface.start();
+
+        // setup DB/load from files
         db = new Database();
         db.load();
 

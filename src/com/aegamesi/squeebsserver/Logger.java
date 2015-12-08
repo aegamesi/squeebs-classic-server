@@ -17,17 +17,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Logger {
     private static final int loggerSize = 19;
-    private static boolean headless = true;
     private static Label loggerBox;
     private static MultiWindowTextGUI gui;
     private static String loggerBuffer;
 
     private static PrintWriter logWriter;
     private static SimpleDateFormat sdf = new SimpleDateFormat("[yy-MM-dd HH:mm:ss] ");
+
+    public static final List<String> logHistory = new ArrayList<String>();
 
 
     public static void init() {
@@ -45,8 +48,6 @@ public class Logger {
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
         Screen screen = new TerminalScreen(terminal);
         screen.startScreen();
-        if (terminal instanceof SwingTerminal)
-            headless = false;
 
 
         // logger panel
@@ -99,6 +100,8 @@ public class Logger {
                 }
             });
         }
+
+        logHistory.add(str);
 
         String logStr = sdf.format(new Date()) + str;
         logWriter.println(logStr);
