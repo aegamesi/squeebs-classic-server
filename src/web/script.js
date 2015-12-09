@@ -41,7 +41,7 @@ $(document).ready(function() {
 		$("#input-status").show();
 
 		$.getJSON('/api/command', {cmd: command, log: log_start}, function(response) {
-			handleLog(response.log);
+			//handleLog(response.log);
 
 			$("#input-status").hide();
 		});

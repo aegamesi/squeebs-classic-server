@@ -49,7 +49,7 @@ public class WebInterface extends BasicAuthHTTPD {
             /* DYNAMIC */
             if (session.getUri().equalsIgnoreCase("/api/poll")) {
                 try {
-                    int start = -20;
+                    int start = -50;
                     if (session.getParms().containsKey("start"))
                         start = Integer.parseInt(session.getParms().get("start"));
 
@@ -69,7 +69,7 @@ public class WebInterface extends BasicAuthHTTPD {
 
                 if (session.getParms().containsKey("log")) {
                     int start = Integer.parseInt(session.getParms().get("log"));
-                    responseObject.add("log", generateLogObject(start));
+                    // responseObject.add("log", generateLogObject(start));
                 }
 
                 return newFixedLengthResponse(responseObject.toString());
