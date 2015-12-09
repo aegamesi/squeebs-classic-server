@@ -1,3 +1,26 @@
+body {
+    color: black;
+    font-family: monospace;
+}
+
+#console {
+    width: 600px;
+    padding: 4px;
+}
 #log {
-    color: red;
+    border: 1px solid black;
+    height: 400px;
+    overflow: scroll;
+    padding: 8px;
+}
+#input {
+    border: 1px solid black;
+    margin-top: 4px;
+    padding-left: 4px;
+}
+#input-box {
+    width: 80%;
+}
+#input-status {
+    display: none;
 }

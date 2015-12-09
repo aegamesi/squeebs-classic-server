@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 
 public class WebInterface extends BasicAuthHTTPD {
     public Gson gson;
@@ -51,26 +52,48 @@ public class WebInterface extends BasicAuthHTTPD {
                     int start = -20;
                     if (session.getParms().containsKey("start"))
                         start = Integer.parseInt(session.getParms().get("start"));
-                    if(start < 0)
-                        start = Math.max(0, start + Logger.logHistory.size());
-
-                    int count = Logger.logHistory.size() - start;
-                    JsonArray linesArray = new JsonArray();
-                    for (int i = 0; i < count; i++)
-                        linesArray.add(Logger.logHistory.get(start + i));
 
                     JsonObject responseObject = new JsonObject();
-                    responseObject.addProperty("start", Logger.logHistory.size());
-                    responseObject.addProperty("count", count);
-                    responseObject.add("lines", linesArray);
+                    responseObject.add("log", generateLogObject(start));
                     return newFixedLengthResponse(responseObject.toString());
                 } catch (NumberFormatException e) {
                 }
+            }
+            if (session.getUri().equalsIgnoreCase("/api/command")) {
+                String command = session.getParms().get("cmd");
+                if(command != null && command.trim().length() != 0)
+                    Logger.handleCommand(command);
+
+                JsonObject responseObject = new JsonObject();
+                responseObject.addProperty("success", true);
+
+                if (session.getParms().containsKey("log")) {
+                    int start = Integer.parseInt(session.getParms().get("log"));
+                    responseObject.add("log", generateLogObject(start));
+                }
+
+                return newFixedLengthResponse(responseObject.toString());
             }
 
             return newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "<h1>404 Not Found</h1>");
         } catch (Exception e) {
             return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, "text/html", "<h1>500 Server Error</h1>" + e.getMessage());
         }
+    }
+
+    private JsonObject generateLogObject(int start) {
+        if(start < 0)
+            start = Math.max(0, start + Logger.logHistory.size());
+
+        int count = Logger.logHistory.size() - start;
+        JsonArray linesArray = new JsonArray();
+        for (int i = 0; i < count; i++)
+            linesArray.add(Logger.logHistory.get(start + i));
+
+        JsonObject responseObject = new JsonObject();
+        responseObject.addProperty("start", Logger.logHistory.size());
+        responseObject.addProperty("count", count);
+        responseObject.add("lines", linesArray);
+        return responseObject;
     }
 }
