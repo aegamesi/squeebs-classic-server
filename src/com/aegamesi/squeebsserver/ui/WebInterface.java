@@ -69,7 +69,7 @@ public class WebInterface extends BasicAuthHTTPD {
 
                 if (session.getParms().containsKey("log")) {
                     int start = Integer.parseInt(session.getParms().get("log"));
-                    // responseObject.add("log", generateLogObject(start));
+                    responseObject.add("log", generateLogObject(start));
                 }
 
                 return newFixedLengthResponse(responseObject.toString());

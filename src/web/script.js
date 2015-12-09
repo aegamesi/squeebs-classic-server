@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	var log_start = -20;
+	var log_start = -50;
 
 	(function pollServer() {
 		$.getJSON('/api/poll', {start: log_start}, function (response) {
@@ -21,17 +21,19 @@ $(document).ready(function() {
 	});
 
 	function handleLog(log) {
-		log_start = log.start;
 		log_elem = $("#log");
 		at_bottom = log_elem[0].scrollHeight - log_elem[0].scrollTop === log_elem[0].clientHeight;
 
-		$.each(log.lines, function(i, e) {
-			var line = $("<div>" + e + "</div>", {class: "log-line"});
-			log_elem.append(line);
-		});
+		var i = log_start < 0 ? 0 : (log_start - (log.start - log.count));
+		for(; i < log.count; i++) {
+			var line = log.lines[i];
+			var elem = $("<div>" + line + "</div>", {class: "log-line"});
+			log_elem.append(elem);
+		}
 
 		if(at_bottom)
 			log_elem.scrollTop(log_elem[0].scrollHeight);
+		log_start = log.start;
 	}
 
 	function sendCommand() {
@@ -41,7 +43,7 @@ $(document).ready(function() {
 		$("#input-status").show();
 
 		$.getJSON('/api/command', {cmd: command, log: log_start}, function(response) {
-			//handleLog(response.log);
+			handleLog(response.log);
 
 			$("#input-status").hide();
 		});
