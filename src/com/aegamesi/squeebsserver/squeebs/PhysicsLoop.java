@@ -10,6 +10,7 @@ import com.aegamesi.squeebsserver.messages.MessageOutMoveMonster;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -36,10 +37,12 @@ public class PhysicsLoop extends Thread {
             }
 
             // kick players for timeout (more than 30 seconds no messages)
-            for (Client c : Main.clientHandler.clients) {
+            for (int i = 0; i < Main.clientHandler.clients.size(); i++) {
+                Client c = Main.clientHandler.clients.get(i);
                 if((System.currentTimeMillis() - c.lastMessageTime) > (30 * 1000)) {
                     Logger.log(c + " pinged out.");
                     c.disconnect();
+                    i--;
                 }
             }
 
