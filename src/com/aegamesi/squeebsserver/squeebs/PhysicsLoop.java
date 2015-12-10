@@ -1,5 +1,6 @@
 package com.aegamesi.squeebsserver.squeebs;
 
+import com.aegamesi.squeebsserver.messages.MessageOutMonsterXP;
 import com.aegamesi.squeebsserver.util.Logger;
 import com.aegamesi.squeebsserver.Main;
 import com.aegamesi.squeebsserver.util.Util;
@@ -7,8 +8,10 @@ import com.aegamesi.squeebsserver.messages.MessageOutCreateItem;
 import com.aegamesi.squeebsserver.messages.MessageOutKillMonster;
 import com.aegamesi.squeebsserver.messages.MessageOutMoveMonster;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PhysicsLoop extends Thread {
     public float save_timer = 300.0f;
@@ -117,6 +120,23 @@ public class PhysicsLoop extends Thread {
                             for (MonsterSpawner spawner : Main.db.spawners)
                                 if(spawner.rm == m.rm)
                                     spawner.disabled = true;
+                        }
+
+                        // send out XP to worthy players
+                        for(Map.Entry<String, Integer> entry : m.damageMap.entrySet()) {
+                            Client player = Main.clientHandler.getClientByUsername(entry.getKey());
+                            if(player != null) {
+                                MessageOutMonsterXP xpMsg = new MessageOutMonsterXP();
+                                xpMsg.mid = m.id;
+                                xpMsg.xp = (int) Math.floor(((float) entry.getValue() * (float) m.xp) / (float) m.m_hp);
+
+                                try {
+                                    player.sendMessage(xpMsg);
+                                } catch(IOException e) {
+                                    player.disconnect();
+                                }
+                            }
+
                         }
                     }
 

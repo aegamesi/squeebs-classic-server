@@ -126,6 +126,8 @@ public class Database {
 
         public float ttl = 60.0f;
         public float move_timer = 3.0f;
+
+        public Map<String, Integer> damageMap = new HashMap<>();
     }
 
     public static class Item {

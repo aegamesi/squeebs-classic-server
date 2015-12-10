@@ -238,7 +238,11 @@ public class ClientHandler {
                 Database.Monster monster = Main.db.monsters[msg.mid];
 
                 if (monster != null) {
-                    int xp = Math.round(((float)monster.xp * ((float) msg.dmg / (float) monster.m_hp)) + 0.5f);
+                    // add damage to damage map for xp purposes
+                    int actual_damage = Math.min(monster.hp, msg.dmg);
+                    int previous_damage = monster.damageMap.containsKey(sender.user.username) ? monster.damageMap.get(sender.user.username) : 0;
+                    monster.damageMap.put(sender.user.username, previous_damage + actual_damage);
+
                     monster.hp -= msg.dmg;
                     monster.ttl = 60.0f;
 
@@ -248,12 +252,6 @@ public class ClientHandler {
                     echoMsg.dmg = msg.dmg;
                     echoMsg.sp = msg.sp;
                     broadcast(echoMsg, monster.rm, sender); /// XXX check if this should actually not be sent to the player who sent it
-
-                    // send xp
-                    MessageOutMonsterXP xpMsg = new MessageOutMonsterXP();
-                    xpMsg.mid = msg.mid;
-                    xpMsg.xp = xp;
-                    sender.sendMessage(xpMsg);
                 }
             }
             break;
