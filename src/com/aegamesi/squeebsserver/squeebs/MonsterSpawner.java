@@ -101,14 +101,18 @@ public class MonsterSpawner {
         monster.x = x;
         monster.y = y;
         monster.t = t;
-        monster.hp = info.hp;
-        monster.m_hp = info.hp;
-        monster.xp = info.xp;
+        monster.m_hp = (int)(info.hp * (0.9 + Util.random.nextDouble() * 0.2));
+        monster.hp = monster.m_hp;
         monster.rm = rm;
         monster.id = Util.findSlot(Main.db.monsters);
         monster.new_x = x;
-        Main.db.monsters[monster.id] = monster;
 
+        // calculate XP
+        monster.xp = (int)Math.round(0.2 * Math.pow(monster.hp, 0.9) + 0.2 * Math.pow(info.arm, 0.5) + 0.3 * Math.pow(info.str, 0.7) - 1);
+        if(info.boss)
+            monster.xp += (int)Math.pow(monster.hp / 25, 1.5);
+
+        Main.db.monsters[monster.id] = monster;
         // tell people
         MessageOutSpawnMonster spawn = new MessageOutSpawnMonster();
         spawn.x = monster.x;
