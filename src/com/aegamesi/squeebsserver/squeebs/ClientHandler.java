@@ -48,6 +48,13 @@ public class ClientHandler {
                 boolean newAccount = false;
                 String username = msg.username.trim().replace(' ', '_');
 
+                if(username.length() == 0 || msg.password.length() == 0) {
+                    MessageOutConnectResponse response = new MessageOutConnectResponse();
+                    response.message = "You must enter a username and password.";
+                    sender.sendMessage(response);
+                    sender.disconnect();
+                }
+
                 Database.User user = null;
                 for (Database.User u : Main.db.users)
                     if (u.username.equalsIgnoreCase(username))
