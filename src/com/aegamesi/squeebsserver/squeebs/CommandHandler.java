@@ -24,7 +24,7 @@ public class CommandHandler {
     public static Map<String, CommandInfo> commands = new HashMap<>();
 
     static {
-        addCommand(new String[]{"chat", "say"}, CONSOLE, 1, -1, new Command() {
+        addCommand(new String[]{"chat", "say"}, ADMIN, 1, -1, new Command() {
             public void run(Client sender, OutputHandler out, String cmd, String[] args) {
                 String say = "Server: " + cmd.substring(args[0].length() + 1);
                 out.print(say);
@@ -227,7 +227,7 @@ public class CommandHandler {
         addCommand(new String[]{"help", "commands"}, PLAYER, 0, 0, new Command() {
             @Override
             public void run(Client sender, OutputHandler out, String cmd, String[] args) {
-                String commandString = "";
+                String commandString = "Commands: ";
                 int rank = CONSOLE;
                 if(sender != null) {
                     if(sender.user.rank == 1)
@@ -244,11 +244,17 @@ public class CommandHandler {
                         continue;
                     if(seenCommands.contains(helpCommand.getValue()))
                         continue;
+
+                    if(commandString.length() > 60) {
+                        out.print(commandString);
+                        commandString = "        ";
+                    }
+
                     seenCommands.add(helpCommand.getValue());
                     commandString += "/" + helpCommand.getKey() + " ";
                 }
 
-                out.print("Commands: " + commandString);
+                out.print(commandString);
             }
         });
     }
