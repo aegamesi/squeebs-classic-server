@@ -32,7 +32,39 @@ public class CommandHandler {
         });
         addCommand(new String[]{"stats"}, ADMIN, 0, 0, new Command() {
             public void run(Client sender, OutputHandler out, String cmd, String[] args) {
-                out.print("Sent: " + ((float)Main.bytes_sent / 1000.0f) + "kb / Recv: " + ((float)Main.bytes_received / 1000.0f) + "kb");
+                out.print("Server Stats:");
+                long stat_uptime = System.currentTimeMillis() - Main.program_start_time;
+                out.print("Uptime: " + Util.formatDuration(stat_uptime));
+
+                float stat_data_sent = ((float)Main.bytes_sent / 1000.0f);
+                float stat_data_recv = ((float)Main.bytes_received / 1000.0f);
+                out.print("Data Sent: " + stat_data_sent + "kb / Recv: " + stat_data_recv + "kb");
+
+                int stat_players_total = 0;
+                int stat_players_online = 0;
+                int stat_players_offline = 0;
+                int stat_players_banned = 0;
+                for(Database.User u : Main.db.users) {
+                    stat_players_total++;
+                    if(u.status == 0)
+                        stat_players_offline++;
+                    if(u.status == 1)
+                        stat_players_online++;
+                    if(u.status == 2)
+                        stat_players_banned++;
+                }
+                out.print("Players: online/offline/banned (" + stat_players_online + ", " + stat_players_offline + ", " + stat_players_banned + ") total (" + stat_players_total + ")");
+
+                int stat_monsters = 0;
+                int stat_items = 0;
+                for(Database.Item i : Main.db.items)
+                    if(i != null)
+                        stat_items++;
+                for(Database.Monster m : Main.db.monsters)
+                    if(m != null)
+                        stat_monsters++;
+                out.print("Items: " + stat_items + ", Monsters: " + stat_monsters);
+
             }
         });
         addCommand(new String[]{"save"}, ADMIN, 0, 0, new Command() {
