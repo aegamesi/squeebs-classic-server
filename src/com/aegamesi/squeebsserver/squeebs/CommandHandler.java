@@ -11,7 +11,9 @@ import com.aegamesi.squeebsserver.messages.MessageOutKick;
 import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class CommandHandler {
     public static final int PLAYER = 0;
@@ -220,6 +222,33 @@ public class CommandHandler {
                     }
                 }
                 out.print("Players Online (" + num + "): " + str);
+            }
+        });
+        addCommand(new String[]{"help", "commands"}, PLAYER, 0, 0, new Command() {
+            @Override
+            public void run(Client sender, OutputHandler out, String cmd, String[] args) {
+                String commandString = "";
+                int rank = CONSOLE;
+                if(sender != null) {
+                    if(sender.user.rank == 1)
+                        rank = ADMIN;
+                    else if(sender.user.rank == 2)
+                        rank = MODERATOR;
+                    else
+                        rank = PLAYER;
+                }
+
+                Set<CommandInfo> seenCommands = new HashSet<CommandInfo>();
+                for(Map.Entry<String, CommandInfo> helpCommand : commands.entrySet()) {
+                    if(helpCommand.getValue().permission > rank)
+                        continue;
+                    if(seenCommands.contains(helpCommand.getValue()))
+                        continue;
+                    seenCommands.add(helpCommand.getValue());
+                    commandString += "/" + helpCommand.getKey() + " ";
+                }
+
+                out.print("Commands: " + commandString);
             }
         });
     }
