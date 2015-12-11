@@ -174,14 +174,16 @@ public class ClientHandler {
                 MessageInChat msg = new MessageInChat();
                 msg.read(sender.buffer);
 
-                Logger.log(msg.msg);
+                Logger.log("[" + sender.user.username + "] " + msg.msg);
 
-                String prefix = sender.user.username + ": ";
-                if(msg.msg.substring(prefix.length()).startsWith("/")) {
-                    CommandHandler.runCommand(msg.msg.substring(prefix.length() + 1), sender);
+                if(msg.msg.startsWith("/")) {
+                    sender.sendMessage(MessageOutServerMessage.build(msg.msg, Color.yellow));
+                    CommandHandler.runCommand(msg.msg.substring(1), sender);
                 } else {
                     // Echo to other players
-                    broadcast(msg, -1, sender);
+                    // TODO profanity filter?
+                    MessageOutServerMessage echo = MessageOutServerMessage.build(sender.user.username + ": " + msg.msg, Color.white);
+                    broadcast(echo, -1, null);
                 }
             }
             break;

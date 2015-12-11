@@ -8,7 +8,7 @@ public class MessageInChat extends Message {
     public String msg;
 
     public MessageInChat() {
-        type = 8;
+        type = 4;
     }
 
     @Override
