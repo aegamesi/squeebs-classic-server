@@ -46,6 +46,19 @@ public class PhysicsLoop extends Thread {
                 }
             }
 
+            // item stuff
+            for(int i = 0; i < Main.db.items.length; i++) {
+                Database.Item item = Main.db.items[i];
+                if(item == null)
+                    continue;
+
+                // item timeout
+                item.ttl -= dt;
+                if(item.ttl < 0.0f) {
+                    Main.db.items[0] = null;
+                }
+            }
+
             // monster spawning
             for (MonsterSpawner spawner : Main.db.spawners) {
                 if(spawner.timer > 0.0) {
