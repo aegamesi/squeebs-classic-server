@@ -1,5 +1,6 @@
 package com.aegamesi.squeebsserver.squeebs;
 
+import com.aegamesi.squeebsserver.messages.MessageOutPlayerLeft;
 import com.aegamesi.squeebsserver.util.Logger;
 import com.aegamesi.squeebsserver.Main;
 import com.aegamesi.squeebsserver.util.Util;
@@ -105,6 +106,30 @@ public class CommandHandler {
                     sender.user.x = player.user.x;
                     sender.user.y = player.user.y;
                 }
+            }
+        });
+        addCommand(new String[]{"spawn"}, PLAYER, 0, 0, new Command() {
+            @Override
+            public void run(Client sender, OutputHandler out, String cmd, String[] args) throws IOException {
+                if(sender == null)
+                    return;
+
+                out.print("Teleporting to spawn.");
+                Database.PortalInfo portal = Database.portalInfo.get(1);
+
+                sender.user.rm = portal.rm;
+                sender.user.x = portal.x;
+                sender.user.y = portal.y;
+                MessageOutChangeRoom reply = new MessageOutChangeRoom();
+                reply.rm = portal.rm;
+                reply.x = portal.x;
+                reply.y = portal.y;
+                sender.sendMessage(reply);
+
+                // echo to other players
+                MessageOutPlayerLeft echoMsg = new MessageOutPlayerLeft();
+                echoMsg.userid = sender.playerid;
+                Main.clientHandler.broadcast(echoMsg, -1, sender);
             }
         });
         addCommand(new String[]{"kick"}, MODERATOR, 1, 1, new Command() {
