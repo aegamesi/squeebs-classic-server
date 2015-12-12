@@ -9,7 +9,8 @@ import java.util.Random;
 
 public class Util {
     public static Random random = new Random();
-    public static String motd = "Welcome to OldSchool Squeebs!";
+    public static String welcome = "Welcome to the aegamesi Classic Squeebs Server!\nLogin and registration are now combined.";
+    public static String motd = "Welcome to Classic Squeebs!";
     public static String[] motd_quotes = {"In Beta 3 since 2007!", "Now even less secure!", "The game's gonna crash, don't blame me!", "Now with 100% more misspellings of 'shield'!", "Reborn almost exactly the same.", "12 Years a Squeeb", "Serving up Squeebs since 2005."};
     public static String[] guide = {"How to Play Squeebs", "You can move with the arrow keys.", "Press 'Z' to attack, 'X' to jump, and 'C' to pick up items.", "Press Enter to chat.", "To open your inventory, press the 'Inventory' button.", "Left click to equip an item, right click to drop it.", "You can view this guide at any time with '/guide'."};
 

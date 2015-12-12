@@ -37,7 +37,7 @@ public class ClientHandler {
                 }
 
                 MessageOutHello response = new MessageOutHello();
-                response.msg = "Welcome to the aegamesi OldSchool Squeebs Server!\nLogin and registration are now combined.";
+                response.msg = Util.welcome;
                 sender.sendMessage(response);
             }
             break;

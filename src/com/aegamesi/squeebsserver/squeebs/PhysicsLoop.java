@@ -55,7 +55,7 @@ public class PhysicsLoop extends Thread {
                 // item timeout
                 item.ttl -= dt;
                 if(item.ttl < 0.0f) {
-                    Main.db.items[0] = null;
+                    Main.db.items[i] = null;
                 }
             }
 
