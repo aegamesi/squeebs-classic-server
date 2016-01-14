@@ -1,5 +1,6 @@
 package com.aegamesi.squeebsserver.ui;
 
+import com.aegamesi.squeebsserver.Main;
 import com.aegamesi.squeebsserver.util.Logger;
 import com.aegamesi.squeebsserver.util.Util;
 import com.google.gson.Gson;
@@ -23,7 +24,7 @@ public class WebInterface extends BasicAuthHTTPD {
 
     @Override
     public boolean authenticateCredentials(String username, String password) {
-        return username.equalsIgnoreCase("u") && password.equalsIgnoreCase("p");
+        return username.equals(Main.config.web_interface_username) && password.equals(Main.config.web_interface_password);
     }
 
     @Override

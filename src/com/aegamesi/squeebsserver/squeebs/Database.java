@@ -1,5 +1,7 @@
 package com.aegamesi.squeebsserver.squeebs;
 
+import com.aegamesi.squeebsserver.Main;
+import com.aegamesi.squeebsserver.util.Logger;
 import com.aegamesi.squeebsserver.util.Util;
 import com.aegamesi.squeebsserver.messages.Message;
 import com.google.gson.Gson;
@@ -31,6 +33,8 @@ public class Database {
 
         BufferedReader jsonReader;
 
+        loadConfig();
+
         // monster info
         jsonReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("monsters.json")));
         MonsterInfo[] monsterInfoArr = gson.fromJson(jsonReader, MonsterInfo[].class);
@@ -52,6 +56,32 @@ public class Database {
         // spawners
         jsonReader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("spawners.json")));
         spawners = gson.fromJson(jsonReader, MonsterSpawner[].class);
+    }
+
+    public void loadConfig() {
+        File configFile = new File(dbDirectory, "config.json");
+        if(configFile.exists()) {
+            try {
+                Main.config = gson.fromJson(new BufferedReader(new FileReader(configFile)), Config.class);
+            } catch(IOException e) {
+                e.printStackTrace();
+                Logger.log("Error loading config.");
+                Main.config = null;
+            }
+        }
+
+        if(Main.config == null) {
+            Main.config = new Config();
+
+            if(!dbDirectory.exists())
+                dbDirectory.mkdir();
+
+            try {
+                Util.writeStringToFile(configFile, gson.toJson(Main.config));
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void load() {

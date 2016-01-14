@@ -1,6 +1,7 @@
 package com.aegamesi.squeebsserver;
 
 import com.aegamesi.squeebsserver.squeebs.ClientHandler;
+import com.aegamesi.squeebsserver.squeebs.Config;
 import com.aegamesi.squeebsserver.squeebs.Database;
 import com.aegamesi.squeebsserver.squeebs.PhysicsLoop;
 import com.aegamesi.squeebsserver.ui.WebInterface;
@@ -22,6 +23,7 @@ public class Main {
     public static long program_start_time = 0L;
 
     public static boolean running = true;
+    public static Config config;
     public static Database db;
     public static ClientHandler clientHandler;
     public static PhysicsLoop physicsLoop;

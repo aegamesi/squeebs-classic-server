@@ -37,7 +37,7 @@ public class ClientHandler {
                 }
 
                 MessageOutHello response = new MessageOutHello();
-                response.msg = Util.welcome;
+                response.msg = Main.config.welcome;
                 sender.sendMessage(response);
             }
             break;
@@ -132,7 +132,7 @@ public class ClientHandler {
                 updatePlayerRoom(sender);
 
                 // send motd
-                sender.sendMessage(MessageOutServerMessage.build(Util.motd, Color.white));
+                sender.sendMessage(MessageOutServerMessage.build(Main.config.motd, Color.white));
                 String motd_quote = "\"" + Util.motd_quotes[Util.random.nextInt(Util.motd_quotes.length)] + "\"";
                 sender.sendMessage(MessageOutServerMessage.build(motd_quote, Color.white));
 
