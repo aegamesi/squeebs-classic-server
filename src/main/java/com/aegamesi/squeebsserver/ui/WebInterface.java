@@ -78,6 +78,7 @@ public class WebInterface extends BasicAuthHTTPD {
 
             return newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "<h1>404 Not Found</h1>");
         } catch (Exception e) {
+            e.printStackTrace();
             return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, "text/html", "<h1>500 Server Error</h1>" + e.getMessage());
         }
     }

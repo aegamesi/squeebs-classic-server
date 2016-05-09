@@ -1,0 +1,15 @@
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'com.aegamesi.squeebsserver.Main'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'org.nanohttpd:nanohttpd:2.3.0'
+}
