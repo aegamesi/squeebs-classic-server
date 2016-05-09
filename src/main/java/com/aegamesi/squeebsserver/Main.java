@@ -6,6 +6,7 @@ import com.aegamesi.squeebsserver.squeebs.Database;
 import com.aegamesi.squeebsserver.squeebs.PhysicsLoop;
 import com.aegamesi.squeebsserver.ui.WebInterface;
 import com.aegamesi.squeebsserver.util.Logger;
+import com.github.sheigutn.pushbullet.Pushbullet;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -29,6 +30,8 @@ public class Main {
     public static PhysicsLoop physicsLoop;
     public static WebInterface webInterface;
 
+    public static Pushbullet pushbullet = null;
+
     public static void main(String[] args) throws IOException {
         // setup gui
         Logger.init();
@@ -42,6 +45,11 @@ public class Main {
         // setup DB/load from files
         db = new Database();
         db.load();
+
+        // setup pushbullet
+        if (config.pushbullet_enabled) {
+            pushbullet = new Pushbullet(config.pushbullet_api_key);
+        }
 
         clientHandler = new ClientHandler();
         Logger.log("There are " + db.users.size() + " users.");

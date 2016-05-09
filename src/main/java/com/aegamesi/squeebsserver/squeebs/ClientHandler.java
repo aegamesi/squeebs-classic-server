@@ -4,6 +4,7 @@ import com.aegamesi.squeebsserver.util.Logger;
 import com.aegamesi.squeebsserver.Main;
 import com.aegamesi.squeebsserver.util.Util;
 import com.aegamesi.squeebsserver.messages.*;
+import com.github.sheigutn.pushbullet.items.push.sendable.defaults.SendableNotePush;
 
 import java.awt.*;
 import java.io.IOException;
@@ -140,6 +141,12 @@ public class ClientHandler {
                     // send how to play
                     for(String line : Util.guide)
                         sender.sendMessage(MessageOutServerMessage.build(line, Color.lightGray));
+                }
+
+                // notify via pushbullet
+                if (Main.pushbullet != null) {
+                    SendableNotePush notePush = new SendableNotePush("Squeebs Login", "Login from " + user.username);
+                    Main.pushbullet.pushToAllDevices(notePush);
                 }
             }
             break;
