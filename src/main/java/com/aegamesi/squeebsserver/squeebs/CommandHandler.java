@@ -32,9 +32,9 @@ public class CommandHandler {
                 Main.clientHandler.broadcast(MessageOutServerMessage.build(say, Color.red), -1, null);
             }
         });
-        addCommand(new String[]{"stats"}, ADMIN, 0, 0, new Command() {
+        addCommand(new String[]{"status", "stats"}, ADMIN, 0, 0, new Command() {
             public void run(Client sender, OutputHandler out, String cmd, String[] args) {
-                out.print("Server Stats:");
+                out.print("Server Status");
                 long stat_uptime = System.currentTimeMillis() - Main.program_start_time;
                 out.print("Uptime: " + Util.formatDuration(stat_uptime));
 
@@ -208,6 +208,26 @@ public class CommandHandler {
 
                 long t_millis = sender.user.playTime + (System.currentTimeMillis() - sender.user.lastLogin);
                 out.print("Total Playtime: " + Util.formatDuration(t_millis));
+            }
+        });
+        addCommand(new String[]{"playerinfo"}, MODERATOR, 1, 1, new Command() {
+            public void run(Client sender, OutputHandler out, String cmd, String[] args) {
+                String username = args[1];
+                Database.User user = Main.db.findUserByName(username);
+                if (user == null) {
+                    out.print("User '" + username + "' not found.");
+                } else {
+                    long t_millis = user.playTime;
+                    if (user.status == 1) {
+                        t_millis += System.currentTimeMillis() - user.lastLogin;
+                    }
+                    out.print("User " + user.username +
+                            ": Level " + user.lvl +
+                            ", " + (user.status == 1 ? "ONLINE" : "OFFLINE"));
+                    out.print("Playtime: " + Util.formatDuration(t_millis) + ", Money: " + user.gold + "g " + user.silver + "s " + user.bronze + "b, " +
+                            "Room: " + Database.roomInfo.get(user.rm).name);
+                    out.print("First login: " + Util.formatDateTime(user.firstLogin) + ", Last login: " + Util.formatDateTime(user.lastLogin));
+                }
             }
         });
         addCommand(new String[]{"players", "online"}, PLAYER, 0, 0, new Command() {

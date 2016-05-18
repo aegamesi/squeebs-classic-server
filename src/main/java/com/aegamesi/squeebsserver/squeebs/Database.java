@@ -143,6 +143,16 @@ public class Database {
         }
     }
 
+    public User findUserByName(String username) {
+        username = username.trim().replace(' ', '_');
+        for (User u : users) {
+            if (u.username.equalsIgnoreCase(username)) {
+                return u;
+            }
+        }
+        return null;
+    }
+
     public static class Monster {
         public int id;
         public int x;

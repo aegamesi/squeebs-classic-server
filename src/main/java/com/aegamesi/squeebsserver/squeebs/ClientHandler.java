@@ -56,10 +56,7 @@ public class ClientHandler {
                     sender.disconnect();
                 }
 
-                Database.User user = null;
-                for (Database.User u : Main.db.users)
-                    if (u.username.equalsIgnoreCase(username))
-                        user = u;
+                Database.User user = Main.db.findUserByName(username);
 
                 if (user == null) {
                     // REGISTER ACCOUNT!

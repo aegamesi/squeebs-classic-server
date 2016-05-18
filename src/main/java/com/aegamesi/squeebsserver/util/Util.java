@@ -5,6 +5,8 @@ import com.aegamesi.squeebsserver.squeebs.Database;
 
 import java.awt.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 public class Util {
@@ -77,5 +79,8 @@ public class Util {
         long t_hours = (t_millis / (1000 * 60 * 60)) % 24;
         long t_days = (t_millis / (1000 * 60 * 60 * 24));
         return t_days + "d " + t_hours + "h " + t_minutes + "m " + t_seconds + "s";
+    }
+    public static String formatDateTime(long t_millis) {
+        return (new SimpleDateFormat()).format(new Date(t_millis));
     }
 }
