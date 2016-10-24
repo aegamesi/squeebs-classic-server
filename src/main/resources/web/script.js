@@ -32,6 +32,13 @@ $(document).ready(function() {
 			}
 			e.preventDefault();
 		}
+		if (e.which == 40) {
+			// down arrow
+			if (last_index < last_lines.length - 1) {
+				last_index++;
+				$("#input-box").val(last_lines[last_index]);
+			}
+		}
 	});
 
 	$('#load_more').click(function (e) {
