@@ -103,6 +103,7 @@ public class WebInterface extends BasicAuthHTTPD {
         JsonObject responseObject = new JsonObject();
         responseObject.addProperty("start", Logger.logHistory.size());
         responseObject.addProperty("count", linesArray.size());
+        responseObject.addProperty("beginning", start);
         responseObject.add("lines", linesArray);
         return responseObject;
     }
