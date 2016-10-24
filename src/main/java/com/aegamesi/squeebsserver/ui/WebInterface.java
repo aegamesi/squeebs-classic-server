@@ -53,9 +53,12 @@ public class WebInterface extends BasicAuthHTTPD {
                     int start = -50;
                     if (session.getParms().containsKey("start"))
                         start = Integer.parseInt(session.getParms().get("start"));
+                    int end = -1;
+                    if (session.getParms().containsKey("end"))
+                        end = Integer.parseInt(session.getParms().get("end"));
 
                     JsonObject responseObject = new JsonObject();
-                    responseObject.add("log", generateLogObject(start));
+                    responseObject.add("log", generateLogObject(start, end));
                     return newFixedLengthResponse(responseObject.toString());
                 } catch (NumberFormatException e) {
                 }
@@ -70,7 +73,7 @@ public class WebInterface extends BasicAuthHTTPD {
 
                 if (session.getParms().containsKey("log")) {
                     int start = Integer.parseInt(session.getParms().get("log"));
-                    responseObject.add("log", generateLogObject(start));
+                    responseObject.add("log", generateLogObject(start, -1));
                 }
 
                 return newFixedLengthResponse(responseObject.toString());
@@ -83,18 +86,23 @@ public class WebInterface extends BasicAuthHTTPD {
         }
     }
 
-    private JsonObject generateLogObject(int start) {
-        if(start < 0)
+    private JsonObject generateLogObject(int start, int end) {
+        if(start < 0) {
             start = Math.max(0, start + Logger.logHistory.size());
+        }
 
-        int count = Logger.logHistory.size() - start;
+        if (end <= 0) {
+            end = Logger.logHistory.size();
+        }
+
         JsonArray linesArray = new JsonArray();
-        for (int i = 0; i < count; i++)
-            linesArray.add(Logger.logHistory.get(start + i));
+        for (int i = start; i < end; i++) {
+            linesArray.add(Logger.logHistory.get(i));
+        }
 
         JsonObject responseObject = new JsonObject();
         responseObject.addProperty("start", Logger.logHistory.size());
-        responseObject.addProperty("count", count);
+        responseObject.addProperty("count", linesArray.size());
         responseObject.add("lines", linesArray);
         return responseObject;
     }
