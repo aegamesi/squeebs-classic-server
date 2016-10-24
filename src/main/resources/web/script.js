@@ -3,6 +3,8 @@ $(document).ready(function() {
 	var log_start = -50;
 	var load_more = 20;
 
+	var last_line = null;
+
 	(function pollServer() {
 		$.getJSON('/api/poll', {start: log_start}, function (response) {
 			if(log_start < 0) {
@@ -16,10 +18,15 @@ $(document).ready(function() {
 		});
 	}());
 
-	$('#input-box').keypress(function (e) {
+	$('#input-box').keydown(function (e) {
 		if (e.which == 13) {
 			sendCommand();
 			return false;
+		}
+		if (e.which == 38 && last_line != null) {
+			// up arrow
+			$("#input-box").val(last_line);
+			e.preventDefault();
 		}
 	});
 
@@ -59,6 +66,7 @@ $(document).ready(function() {
 		var command = input_box.val();
 		input_box.val('');
 		$("#input-status").show();
+		last_line = command;
 
 		$.getJSON('/api/command', {cmd: command, log: log_start}, function(response) {
 			handleLog(response.log);
