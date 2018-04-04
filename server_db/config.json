@@ -1,0 +1,8 @@
+{
+  "web_interface_username":"u",
+  "web_interface_password":"p",
+  "motd":"Welcome to Classic Squeebs!\nContact ae@aegamesi for inquiries.",
+  "welcome":"Welcome to the aegamesi Classic Squeebs Server!\nLogin and registration are now combined.",
+  "pushbullet_enabled": false,
+  "pushbullet_api_key": ""
+}
