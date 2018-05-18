@@ -43,7 +43,8 @@ public class Main {
         webInterface.start();
 
         // setup DB/load from files
-        db = new Database();
+        String dbDirectoryPath = args.length == 0 ? null : args[0];
+        db = new Database(dbDirectoryPath);
         db.load();
 
         // setup pushbullet

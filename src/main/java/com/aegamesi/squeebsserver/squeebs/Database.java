@@ -27,8 +27,11 @@ public class Database {
     public transient File dbDirectory;
     public transient Gson gson;
 
-    public Database() {
-        dbDirectory = new File("./server_db");
+    public Database(String dbDirectoryPath) {
+        if (dbDirectoryPath == null) {
+            dbDirectoryPath = "./server_db";
+        }
+        dbDirectory = new File(dbDirectoryPath);
         gson = new Gson();
 
         BufferedReader jsonReader;

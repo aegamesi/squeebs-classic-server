@@ -28,3 +28,12 @@ dependencies {
 task fatJar(type: OneJar) {
     mainClass = mainClassName
 }
+
+// Heroku Stuff
+/*task copyToLib(type: Copy) {
+    into "$buildDir/lib"
+    from(configurations.compile)
+}
+*/
+task stage(dependsOn: ['fatJar'])
+// stage.dependsOn(copyToLib)
