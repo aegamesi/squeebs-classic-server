@@ -27,6 +27,10 @@ public class Client extends Thread {
     private boolean running = true;
     public long lastMessageTime = 0;
 
+    // temporary state for login
+    public String _tempUsername = null;
+    public String _tempPassword = null;
+
     public Client(ClientHandler handler, Socket socket) {
         this.socket = socket;
         this.handler = handler;

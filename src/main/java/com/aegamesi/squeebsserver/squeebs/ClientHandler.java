@@ -21,8 +21,41 @@ public class ClientHandler {
         players = new Client[Main.PLAYER_MAX];
     }
 
+    private static void popupMessage(Client sender, String msg) throws IOException {
+        MessageOutPopup response = new MessageOutPopup();
+        response.style = MessageOutPopup.STYLE_MESSAGE;
+        response.msg = msg;
+        sender.sendMessage(response);
+    }
+
+    private static void popupPrompt(Client sender, int tag, String msg, String def) throws IOException {
+        MessageOutPopup response = new MessageOutPopup();
+        response.style = MessageOutPopup.STYLE_PROMPT;
+        response.msg = msg;
+        response.def = def;
+        response.tag = tag;
+        sender.sendMessage(response);
+    }
+
+    private static void popupButtons(Client sender, int tag, String msg, String btn1, String btn2, String btn3) throws IOException {
+        MessageOutPopup response = new MessageOutPopup();
+        response.style = MessageOutPopup.STYLE_BUTTONS;
+        response.msg = msg;
+        response.tag = tag;
+        response.button1 = btn1;
+        response.button2 = btn2;
+        response.button3 = btn3;
+        sender.sendMessage(response);
+    }
+
+    private static void sendLoginPrompt(Client sender) throws IOException {
+        sender._tempPassword = null;
+        sender._tempUsername = null;
+        popupButtons(sender, 1, Main.config.welcome, "Login", "Register", "Exit");
+    }
+
     public void handlePacket(int type, int messageSize, Client sender) throws IOException {
-        //Logger.log(client + " gives " + type);
+        // Logger.log(sender + " gives " + type);
 
         switch (type) {
             case 31: {
@@ -31,122 +64,182 @@ public class ClientHandler {
 
                 if (msg.version != Main.PROTOCOL_VERSION) {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "Your client version is out of date. Please redownload from facebook.com/squeebs";
+                    response.message = "Your client version is out of date.\nPlease redownload from facebook.com/squeebs";
                     sender.sendMessage(response);
                     sender.disconnect();
                     break;
                 }
 
-                MessageOutHello response = new MessageOutHello();
-                response.msg = Main.config.welcome;
-                sender.sendMessage(response);
+                sendLoginPrompt(sender);
             }
             break;
-            case 21: {
-                MessageInLogin msg = new MessageInLogin();
+
+            case 36: {
+                MessageInPopupResponse msg = new MessageInPopupResponse();
                 msg.read(sender.buffer);
 
-                boolean newAccount = false;
-                String username = msg.username.trim().replace(' ', '_');
-
-                if(username.length() == 0 || msg.password.length() == 0) {
-                    MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "You must enter a username and password.";
-                    sender.sendMessage(response);
-                    sender.disconnect();
-                }
-
-                Database.User user = Main.db.findUserByName(username);
-
-                if (user == null) {
-                    // REGISTER ACCOUNT!
-                    newAccount = true;
-                    user = new Database.User();
-                    user.username = username;
-                    user.password = msg.password;
-                    user.firstLogin = System.currentTimeMillis();
-                    Main.db.users.add(user);
-
-                    Logger.log("Created a new account " + username + " with password " + user.password);
-                    // NO BREAK!
-                } else if (user.status == 1) {
-                    // already online
-                    MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "This account is already logged in.";
-                    sender.sendMessage(response);
-                    sender.disconnect();
+                switch (msg.tag) {
+                    case 1: { // Login or Register?
+                        switch (msg.button) {
+                            case 1: // login
+                                popupPrompt(sender, 5, "Please enter your username:", "");
+                                break;
+                            case 2: // register
+                                popupPrompt(sender, 2, "Enter your desired username:", "");
+                                break;
+                            default:
+                                MessageOutConnectResponse response = new MessageOutConnectResponse();
+                                response.message = "";
+                                sender.sendMessage(response);
+                                sender.disconnect();
+                                break;
+                        }
+                    }
                     break;
-                } else if (!user.password.equals(msg.password)) {
-                    // invalid password
-                    MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "Incorrect password.";
-                    sender.sendMessage(response);
-                    sender.disconnect();
+                    case 2: { // register got username
+                        String username = msg.response.trim().replace(' ', '_');
+                        if (username.length() == 0) {
+                            sendLoginPrompt(sender);
+                            break;
+                        }
+                        Database.User user = Main.db.findUserByName(username);
+                        if (user == null) {
+                            sender._tempUsername = username;
+                            popupPrompt(sender, 3, "Enter your password:", "");
+                        } else {
+                            popupPrompt(sender, 2, "That username is taken. Enter your desired username:", username);
+                        }
+                    }
                     break;
-                } else if (user.status == 2) {
-                    // user is banned
-                    MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "This account is banned.";
-                    sender.sendMessage(response);
-                    sender.disconnect();
-
-                    Logger.log("Banned user " + user.username + " tried to log in.");
+                    case 3: { // register password 1
+                        String password = msg.response;
+                        if (password.length() == 0) {
+                            sendLoginPrompt(sender);
+                        } else {
+                            sender._tempPassword = password;
+                            popupPrompt(sender, 4, "Confirm your password:", "");
+                        }
+                    }
                     break;
-                }
+                    case 4: { // register password 2
+                        String password = msg.response;
+                        if (!password.equals(sender._tempPassword)) {
+                            popupPrompt(sender, 3, "Your passwords do not match. Enter your password:", "");
+                        } else {
+                            // complete!
+                            Database.User user = new Database.User();
+                            user.username = sender._tempUsername;
+                            user.password = sender._tempPassword;
+                            user.firstLogin = System.currentTimeMillis();
+                            Main.db.users.add(user);
 
-                user.status = 1; // set to online
-                user.lastLogin = System.currentTimeMillis();
-                sender.user = user;
+                            Logger.log("Created a new account " + user.username + " with password " + user.password);
 
-                int playerid = Util.findSlot(players);
-                if (playerid == -1) {
-                    MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "Player cap reached. Try again later.";
-                    sender.sendMessage(response);
-                    sender.disconnect();
+                            popupMessage(sender, "You've successfully registered, " + user.username + "!");
+                            sendLoginPrompt(sender);
+
+                            // notify via pushbullet
+                            if (Main.pushbullet != null) {
+                                SendableNotePush notePush = new SendableNotePush("Squeebs Register", "Register from " + user.username);
+                                Main.pushbullet.pushToAllDevices(notePush);
+                            }
+                        }
+                    }
                     break;
-                }
-                Logger.log("Player " + user.username + " logged on. ID: " + playerid);
-                sender.playerid = playerid;
-                players[sender.playerid] = sender;
+                    case 5: { // login username
+                        String username = msg.response.trim().replace(' ', '_');
+                        if (username.length() == 0) {
+                            sendLoginPrompt(sender);
+                            break;
+                        }
 
-                MessageOutLoginSuccess response = new MessageOutLoginSuccess();
-                /*if (newAccount)
-                    response.message = "Welcome " + user.username + ". You have successfully registered. Have fun!";
-                else
-                    response.message = "Welcome " + user.username + ". You have successfully logged in. Have fun!";*/
-                response.user = user;
-                sender.sendMessage(response);
+                        Database.User user = Main.db.findUserByName(username);
+                        if (user == null) {
+                            popupMessage(sender, "User not found. Have you registered?");
+                            sendLoginPrompt(sender);
+                        } else {
+                            sender._tempUsername = username;
+                            popupPrompt(sender, 6, "Please enter your password:", "");
+                        }
+                    }
+                    break;
+                    case 6: { // login password
+                        Database.User user = Main.db.findUserByName(sender._tempUsername);
 
-                MessageOutPlayerID pidMessage = new MessageOutPlayerID();
-                pidMessage.playerid = playerid;
-                sender.sendMessage(pidMessage);
+                        if (!user.password.equals(msg.response)) {
+                            popupMessage(sender, "Incorrect password.");
+                            sendLoginPrompt(sender);
 
-                if(newAccount)
-                    broadcast(MessageOutServerMessage.build("Welcome " + user.username + " to Squeebs!", Color.yellow), -1, sender);
-                else
-                    broadcast(MessageOutServerMessage.build(user.username + " has logged on.", Color.yellow), -1, sender);
+                            Logger.log("Incorrect password for " + user.username);
+                            break;
+                        } else if (user.status == 1) {
+                            // already online
+                            popupMessage(sender, "This account is already logged in.");
+                            sendLoginPrompt(sender);
+                            break;
+                        } else if (user.status == 2) {
+                            // user is banned
+                            popupMessage(sender, "This account is banned.");
+                            sendLoginPrompt(sender);
 
-                updatePlayerRoom(sender);
+                            Logger.log("Banned user " + user.username + " tried to log in.");
+                            break;
+                        }
 
-                // send motd
-                sender.sendMessage(MessageOutServerMessage.build(Main.config.motd, Color.white));
-                String motd_quote = "\"" + Util.motd_quotes[Util.random.nextInt(Util.motd_quotes.length)] + "\"";
-                sender.sendMessage(MessageOutServerMessage.build(motd_quote, Color.white));
+                        // otherwise...
+                        int playerid = Util.findSlot(players);
+                        if (playerid == -1) {
+                            popupMessage(sender, "Player cap reached. Try again later.");
+                            sendLoginPrompt(sender);
+                            break;
+                        }
 
-                if(newAccount) {
-                    // send how to play
-                    for(String line : Util.guide)
-                        sender.sendMessage(MessageOutServerMessage.build(line, Color.lightGray));
-                }
+                        boolean newAccount = user.lastLogin <= 0;
+                        user.status = 1; // set to online
+                        user.lastLogin = System.currentTimeMillis();
+                        sender.user = user;
 
-                // notify via pushbullet
-                if (Main.pushbullet != null) {
-                    SendableNotePush notePush = new SendableNotePush("Squeebs Login", "Login from " + user.username);
-                    Main.pushbullet.pushToAllDevices(notePush);
+                        Logger.log("Player " + user.username + " logged on. ID: " + playerid);
+                        sender.playerid = playerid;
+                        players[sender.playerid] = sender;
+
+                        popupMessage(sender, "Welcome " + user.username + ". You have successfully logged in. Have fun!");
+                        MessageOutLoginSuccess response = new MessageOutLoginSuccess();
+                        response.user = user;
+                        sender.sendMessage(response);
+
+                        MessageOutPlayerID pidMessage = new MessageOutPlayerID();
+                        pidMessage.playerid = playerid;
+                        sender.sendMessage(pidMessage);
+
+                        if(newAccount)
+                            broadcast(MessageOutServerMessage.build("Welcome " + user.username + " to Squeebs!", Color.yellow), -1, sender);
+                        else
+                            broadcast(MessageOutServerMessage.build(user.username + " has logged on.", Color.yellow), -1, sender);
+
+                        updatePlayerRoom(sender);
+
+                        // send motd
+                        sender.sendMessage(MessageOutServerMessage.build(Main.config.motd, Color.white));
+                        String motd_quote = "\"" + Util.motd_quotes[Util.random.nextInt(Util.motd_quotes.length)] + "\"";
+                        sender.sendMessage(MessageOutServerMessage.build(motd_quote, Color.white));
+
+                        if(newAccount) {
+                            // send how to play
+                            for(String line : Util.guide)
+                                sender.sendMessage(MessageOutServerMessage.build(line, Color.lightGray));
+                        }
+
+                        // notify via pushbullet
+                        if (Main.pushbullet != null) {
+                            SendableNotePush notePush = new SendableNotePush("Squeebs Login", "Login from " + user.username);
+                            Main.pushbullet.pushToAllDevices(notePush);
+                        }
+                    }
                 }
             }
             break;
+
             case 2: {
                 MessageInAppearance msg = new MessageInAppearance();
                 msg.read(sender.buffer);
@@ -158,6 +251,7 @@ public class ClientHandler {
                 broadcast(msg, sender.user.rm, null);
             }
             break;
+
             case 3: {
                 MessageInQuit msg = new MessageInQuit();
                 msg.read(sender.buffer);
@@ -173,6 +267,7 @@ public class ClientHandler {
 
             }
             break;
+
             case 4: {
                 // incoming chat
                 MessageInChat msg = new MessageInChat();
