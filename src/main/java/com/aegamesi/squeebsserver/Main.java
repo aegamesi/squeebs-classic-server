@@ -13,7 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Main {
-    public static final int PROTOCOL_VERSION = 6;
+    public static final int PROTOCOL_VERSION = 7;
     public static final int PORT = 12564;
     public static final int WEB_PORT = 12566;
     public static final int PLAYER_MAX = 20;

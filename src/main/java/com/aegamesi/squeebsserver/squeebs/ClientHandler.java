@@ -31,7 +31,7 @@ public class ClientHandler {
 
                 if (msg.version != Main.PROTOCOL_VERSION) {
                     MessageOutConnectResponse response = new MessageOutConnectResponse();
-                    response.message = "Your client version is out of date. Please redownload.";
+                    response.message = "Your client version is out of date. Please redownload from facebook.com/squeebs";
                     sender.sendMessage(response);
                     sender.disconnect();
                     break;
@@ -111,10 +111,10 @@ public class ClientHandler {
                 players[sender.playerid] = sender;
 
                 MessageOutLoginSuccess response = new MessageOutLoginSuccess();
-                if (newAccount)
+                /*if (newAccount)
                     response.message = "Welcome " + user.username + ". You have successfully registered. Have fun!";
                 else
-                    response.message = "Welcome " + user.username + ". You have successfully logged in. Have fun!";
+                    response.message = "Welcome " + user.username + ". You have successfully logged in. Have fun!";*/
                 response.user = user;
                 sender.sendMessage(response);
 
