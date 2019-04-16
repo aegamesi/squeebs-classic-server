@@ -60,15 +60,15 @@
   {"x": 320, "y": 352, "rm": 1312, "t": 9},
   {"x": 128, "y": 352, "rm": 1312, "t": 9},
   {"x": 544, "y": 192, "rm": 1313, "t": 15, "preset": 2},
-  {"x": 704, "y": 352, "rm": 1313, "t": 16, "preset": 3}, // cspwn
-  {"x": 416, "y": 352, "rm": 1313, "t": 16, "preset": 3}, // cspwn
-  {"x": 512, "y": 352, "rm": 1313, "t": 16, "preset": 3}, // cspwn
-  {"x": 608, "y": 352, "rm": 1313, "t": 16, "preset": 3}, // cspwn
-  {"x": 320, "y": 352, "rm": 1313, "t": 16, "preset": 3}, // cspwn
-  {"x": 224, "y": 352, "rm": 1313, "t": 16, "preset": 3}, // cspwn
-  {"x": 128, "y": 352, "rm": 1313, "t": 16, "preset": 3}, // cspwn
-  {"x": 800, "y": 352, "rm": 1313, "t": 16, "preset": 3}, // cspwn
-  {"x": 896, "y": 352, "rm": 1313, "t": 16, "preset": 3}, // cspwn
+  {"x": 704, "y": 352, "rm": 1313, "t": 16, "preset": 3, "player_freq_factor": 0.1}, // cspwn
+  {"x": 416, "y": 352, "rm": 1313, "t": 16, "preset": 3, "player_freq_factor": 0.1}, // cspwn
+  {"x": 512, "y": 352, "rm": 1313, "t": 16, "preset": 3, "player_freq_factor": 0.1}, // cspwn
+  {"x": 608, "y": 352, "rm": 1313, "t": 16, "preset": 3, "player_freq_factor": 0.1}, // cspwn
+  {"x": 320, "y": 352, "rm": 1313, "t": 16, "preset": 3, "player_freq_factor": 0.1}, // cspwn
+  {"x": 224, "y": 352, "rm": 1313, "t": 16, "preset": 3, "player_freq_factor": 0.1}, // cspwn
+  {"x": 128, "y": 352, "rm": 1313, "t": 16, "preset": 3, "player_freq_factor": 0.1}, // cspwn
+  {"x": 800, "y": 352, "rm": 1313, "t": 16, "preset": 3, "player_freq_factor": 0.1}, // cspwn
+  {"x": 896, "y": 352, "rm": 1313, "t": 16, "preset": 3, "player_freq_factor": 0.1}, // cspwn
   {"x": 640, "y": 384, "rm": 1305, "t": 10},
   {"x": 480, "y": 384, "rm": 1305, "t": 10},
   {"x": 224, "y": 384, "rm": 1305, "t": 10},

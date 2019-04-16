@@ -36,10 +36,10 @@ public class PhysicsLoop extends Thread {
                 Main.db.save();
             }
 
-            // kick players for timeout (more than 30 seconds no messages)
+            // kick players for timeout (more than 120 seconds no messages)
             for (int i = 0; i < Main.clientHandler.clients.size(); i++) {
                 Client c = Main.clientHandler.clients.get(i);
-                if((System.currentTimeMillis() - c.lastMessageTime) > (30 * 1000)) {
+                if((System.currentTimeMillis() - c.lastMessageTime) > (120 * 1000)) {
                     Logger.log(c + " pinged out.");
                     c.disconnect();
                     i--;
