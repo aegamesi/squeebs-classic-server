@@ -18,9 +18,9 @@ public class Logger {
     public static final List<String> logHistory = new ArrayList<String>();
 
 
-    public static void init() {
+    public static void init(String filename) {
         try {
-            logWriter = new PrintWriter(new BufferedWriter(new FileWriter("log.txt", true)));
+            logWriter = new PrintWriter(new BufferedWriter(new FileWriter(filename, true)));
 
         } catch (IOException e) {
             e.printStackTrace();

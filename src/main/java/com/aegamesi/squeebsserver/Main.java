@@ -33,8 +33,10 @@ public class Main {
     public static Pushbullet pushbullet = null;
 
     public static void main(String[] args) throws IOException {
+        String dbDirectoryPath = args.length == 0 ? null : args[0];
+
         // setup gui
-        Logger.init();
+        Logger.init(dbDirectoryPath + "/log.txt");
         Logger.log("Starting up Squeebs Java Server...");
         program_start_time = System.currentTimeMillis();
 
@@ -43,7 +45,6 @@ public class Main {
         webInterface.start();
 
         // setup DB/load from files
-        String dbDirectoryPath = args.length == 0 ? null : args[0];
         db = new Database(dbDirectoryPath);
         db.load();
 
