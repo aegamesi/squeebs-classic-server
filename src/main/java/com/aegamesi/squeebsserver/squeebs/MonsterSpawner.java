@@ -21,6 +21,7 @@ public class MonsterSpawner {
     public boolean normal_spawner = true; // spawn rate decreases as monster amount increases
     public boolean only_one = false; // don't schedule a spawn if there are already monsters
     public boolean regular_spawning = true; // whether to regularly schedule spawns
+    public double player_freq_factor = 1.0; // how many players each player counts as for purpose of spawning quicker
 
     public void init() {
         info = Database.monsterInfo.get(t);
@@ -78,7 +79,7 @@ public class MonsterSpawner {
         if(regular_spawning) {
             // regular spawning
             timer = (base_timer + (Util.random.nextDouble() * base_timer_variance));
-            timer /= (double)Math.max(players_in_room, 1);
+            timer /= (double)Math.max(players_in_room * player_freq_factor, 1);
         }
 
         if(players_in_room == 0)
