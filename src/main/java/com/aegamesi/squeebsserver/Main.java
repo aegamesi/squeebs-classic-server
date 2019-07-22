@@ -36,13 +36,9 @@ public class Main {
         String dbDirectoryPath = args.length == 0 ? null : args[0];
 
         // setup gui
-        Logger.init(dbDirectoryPath + "/log.txt");
+        Logger.init(dbDirectoryPath);
         Logger.log("Starting up Squeebs Java Server...");
         program_start_time = System.currentTimeMillis();
-
-        // setup web interface
-        webInterface = new WebInterface(WEB_PORT);
-        webInterface.start();
 
         // setup DB/load from files
         db = new Database(dbDirectoryPath);
@@ -59,6 +55,9 @@ public class Main {
         // physloop
         physicsLoop = new PhysicsLoop();
         physicsLoop.start();
+
+        // start web interface
+        WebInterface.start(WEB_PORT);
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             Logger.log("Listening on port " + PORT);
