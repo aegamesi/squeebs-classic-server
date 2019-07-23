@@ -1,6 +1,7 @@
 package com.aegamesi.squeebsserver.ui;
 
 import com.aegamesi.squeebsserver.Main;
+import com.aegamesi.squeebsserver.squeebs.GameWebSocket;
 import com.aegamesi.squeebsserver.util.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -9,14 +10,18 @@ import com.qmetric.spark.authentication.BasicAuthenticationFilter;
 import spark.Service;
 import spark.staticfiles.StaticFilesConfiguration;
 
-import static spark.Spark.*;
-
 public class WebInterface {
     public static void start(int port) {
         Logger.log("Opening web server on port " + port);
         Service service = Service.ignite();
+        service.exception(Exception.class, (exception, request, response) -> {
+            exception.printStackTrace();
+        });
         service.port(port);
-        service.before(new BasicAuthenticationFilter("/*", new AuthenticationDetails(
+
+        service.webSocket("/game", GameWebSocket.class);
+
+        service.before("/admin/*", new BasicAuthenticationFilter(new AuthenticationDetails(
                 Main.config.web_interface_username,
                 Main.config.web_interface_password
         )));
@@ -27,7 +32,7 @@ public class WebInterface {
         service.before((request, response) ->
                 staticHandler.consume(request.raw(), response.raw()));
 
-        service.get("/api/poll", (request, response) -> {
+        service.get("/admin/api/poll", (request, response) -> {
             int start = Integer.parseInt(request.queryParamOrDefault("start", "-50"));
             int end = Integer.parseInt(request.queryParamOrDefault("end", "0"));
 
@@ -36,7 +41,7 @@ public class WebInterface {
             return responseObject.toString();
         });
 
-        service.get("/api/command", (request, response) -> {
+        service.get("/admin/api/command", (request, response) -> {
             String command = request.queryParams("cmd");
             if (command != null && command.trim().length() != 0) {
                 Logger.handleCommand(command);

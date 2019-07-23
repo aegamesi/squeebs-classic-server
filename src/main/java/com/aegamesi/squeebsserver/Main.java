@@ -8,13 +8,8 @@ import com.aegamesi.squeebsserver.ui.WebInterface;
 import com.aegamesi.squeebsserver.util.Logger;
 import com.github.sheigutn.pushbullet.Pushbullet;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 public class Main {
-    public static final int PROTOCOL_VERSION = 7;
-    public static final int PORT = 12564;
+    public static final int PROTOCOL_VERSION = 8;
     public static final int WEB_PORT = 12566;
     public static final int PLAYER_MAX = 20;
     public static final int TPS = 20;
@@ -28,11 +23,10 @@ public class Main {
     public static Database db;
     public static ClientHandler clientHandler;
     public static PhysicsLoop physicsLoop;
-    public static WebInterface webInterface;
 
     public static Pushbullet pushbullet = null;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         String dbDirectoryPath = args.length == 0 ? null : args[0];
 
         // setup gui
@@ -56,25 +50,7 @@ public class Main {
         physicsLoop = new PhysicsLoop();
         physicsLoop.start();
 
-        // start web interface
+        // start web + server interface
         WebInterface.start(WEB_PORT);
-
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            Logger.log("Listening on port " + PORT);
-
-            while (running) {
-                Socket socket = serverSocket.accept();
-                Logger.log("Accepted connection from " + socket.getInetAddress());
-                clientHandler.handleNewClient(socket);
-            }
-
-            serverSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void close() {
-        running = false;
     }
 }

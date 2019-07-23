@@ -5,6 +5,7 @@ import com.aegamesi.squeebsserver.Main;
 import com.aegamesi.squeebsserver.util.Util;
 import com.aegamesi.squeebsserver.messages.*;
 import com.github.sheigutn.pushbullet.items.push.sendable.defaults.SendableNotePush;
+import org.eclipse.jetty.websocket.api.Session;
 
 import java.awt.*;
 import java.io.IOException;
@@ -259,14 +260,6 @@ public class ClientHandler {
                 msg.read(sender.buffer);
 
                 sender.disconnect();
-
-                // echo to other players
-                broadcast(MessageOutServerMessage.build(sender.user.username + " has left the server.", Color.yellow), -1, null);
-
-                MessageOutPlayerLeft response = new MessageOutPlayerLeft();
-                response.userid = sender.playerid;
-                broadcast(response, sender.user.rm, null);
-
             }
             break;
 
@@ -571,10 +564,7 @@ public class ClientHandler {
         return num;
     }
 
-    public void handleNewClient(Socket socket) {
-        Client newClient = new Client(this, socket);
-        newClient.start();
-
-        clients.add(newClient);
+    public void handleNewClient(Client client) {
+        clients.add(client);
     }
 }
