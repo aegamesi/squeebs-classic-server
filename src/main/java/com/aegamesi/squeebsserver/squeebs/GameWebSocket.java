@@ -38,8 +38,10 @@ public class GameWebSocket {
         client.buffer.clear();
         client.buffer.put(data, off, len);
         client.buffer.position(0);
+        client.lastMessageTime = System.currentTimeMillis();
 
         int packetType = client.buffer.get();
+        // Logger.log(client + " gives " + packetType + ", len: " + len);
         Main.bytes_received += len;
         Main.clientHandler.handlePacket(packetType, len - 1, client);
     }

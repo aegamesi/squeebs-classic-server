@@ -56,8 +56,6 @@ public class ClientHandler {
     }
 
     public void handlePacket(int type, int messageSize, Client sender) throws IOException {
-        // Logger.log(sender + " gives " + type);
-
         switch (type) {
             case 31: {
                 MessageInHello msg = new MessageInHello();
