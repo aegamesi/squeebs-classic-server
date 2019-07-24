@@ -10,7 +10,6 @@ import com.github.sheigutn.pushbullet.Pushbullet;
 
 public class Main {
     public static final int PROTOCOL_VERSION = 8;
-    public static final int WEB_PORT = 12566;
     public static final int PLAYER_MAX = 20;
     public static final int TPS = 20;
 
@@ -25,6 +24,14 @@ public class Main {
     public static PhysicsLoop physicsLoop;
 
     public static Pushbullet pushbullet = null;
+
+    public static int getPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 80;
+    }
 
     public static void main(String[] args) {
         String dbDirectoryPath = args.length == 0 ? null : args[0];
@@ -51,6 +58,6 @@ public class Main {
         physicsLoop.start();
 
         // start web + server interface
-        WebInterface.start(WEB_PORT);
+        WebInterface.start(getPort());
     }
 }

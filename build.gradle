@@ -1,19 +1,9 @@
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'application'
-apply plugin: 'gradle-one-jar'
 
 mainClassName = 'com.aegamesi.squeebsserver.Main'
 sourceCompatibility = '1.8'
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.github.rholder:gradle-one-jar:1.0.4'
-    }
-}
 
 repositories {
     mavenCentral()
@@ -28,15 +18,15 @@ dependencies {
     compile 'org.slf4j:slf4j-simple:1.7.21'
 }
 
-task fatJar(type: OneJar) {
-    mainClass = mainClassName
+jar {
+    manifest {
+        attributes "Main-Class": mainClassName
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
-// Heroku Stuff
-/*task copyToLib(type: Copy) {
-    into "$buildDir/lib"
-    from(configurations.compile)
-}
-*/
-task stage(dependsOn: ['fatJar'])
-// stage.dependsOn(copyToLib)
+
+task stage(dependsOn: ['jar'])
