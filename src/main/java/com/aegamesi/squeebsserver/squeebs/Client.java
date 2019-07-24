@@ -48,6 +48,7 @@ public class Client {
         int len = buffer.position();
         buffer.position(0);
         buffer.limit(len);
+        // Logger.log("Sent message id: " + m.type + ", len:" + len);
 
         session.getRemote().sendBytes(buffer);
         Main.bytes_sent += len;

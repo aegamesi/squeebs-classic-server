@@ -1,2 +1,2 @@
 0|US West|squeebs.aegamesi.com/game|0|20
-1|Local|localhost/game|0|20
+19|local|localhost/game|0|20
