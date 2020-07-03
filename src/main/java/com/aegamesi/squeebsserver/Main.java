@@ -8,14 +8,8 @@ import com.aegamesi.squeebsserver.ui.WebInterface;
 import com.aegamesi.squeebsserver.util.Logger;
 import com.github.sheigutn.pushbullet.Pushbullet;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 public class Main {
-    public static final int PROTOCOL_VERSION = 7;
-    public static final int PORT = 12564;
-    public static final int WEB_PORT = 12566;
+    public static final int PROTOCOL_VERSION = 8;
     public static final int PLAYER_MAX = 20;
     public static final int TPS = 20;
 
@@ -28,21 +22,24 @@ public class Main {
     public static Database db;
     public static ClientHandler clientHandler;
     public static PhysicsLoop physicsLoop;
-    public static WebInterface webInterface;
 
     public static Pushbullet pushbullet = null;
 
-    public static void main(String[] args) throws IOException {
+    public static int getPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 80;
+    }
+
+    public static void main(String[] args) {
         String dbDirectoryPath = args.length == 0 ? null : args[0];
 
         // setup gui
-        Logger.init(dbDirectoryPath + "/log.txt");
+        Logger.init(dbDirectoryPath);
         Logger.log("Starting up Squeebs Java Server...");
         program_start_time = System.currentTimeMillis();
-
-        // setup web interface
-        webInterface = new WebInterface(WEB_PORT);
-        webInterface.start();
 
         // setup DB/load from files
         db = new Database(dbDirectoryPath);
@@ -60,22 +57,7 @@ public class Main {
         physicsLoop = new PhysicsLoop();
         physicsLoop.start();
 
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            Logger.log("Listening on port " + PORT);
-
-            while (running) {
-                Socket socket = serverSocket.accept();
-                Logger.log("Accepted connection from " + socket.getInetAddress());
-                clientHandler.handleNewClient(socket);
-            }
-
-            serverSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void close() {
-        running = false;
+        // start web + server interface
+        WebInterface.start(getPort());
     }
 }

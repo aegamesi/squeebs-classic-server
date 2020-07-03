@@ -1,93 +1,66 @@
 package com.aegamesi.squeebsserver.ui;
 
 import com.aegamesi.squeebsserver.Main;
+import com.aegamesi.squeebsserver.squeebs.GameWebSocket;
 import com.aegamesi.squeebsserver.util.Logger;
-import com.aegamesi.squeebsserver.util.Util;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.qmetric.spark.authentication.AuthenticationDetails;
+import com.qmetric.spark.authentication.BasicAuthenticationFilter;
+import spark.Service;
+import spark.staticfiles.StaticFilesConfiguration;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.HashMap;
-
-public class WebInterface extends BasicAuthHTTPD {
-    public Gson gson;
-
-    public WebInterface(int port) {
-        super(port, "Squeebs");
+public class WebInterface {
+    public static void start(int port) {
         Logger.log("Opening web server on port " + port);
+        Service service = Service.ignite();
+        service.exception(Exception.class, (exception, request, response) -> {
+            exception.printStackTrace();
+        });
+        service.port(port);
 
-        gson = new Gson();
+        service.webSocket("/game", GameWebSocket.class);
+
+        service.before("/admin/*", new BasicAuthenticationFilter(new AuthenticationDetails(
+                Main.config.web_interface_username,
+                Main.config.web_interface_password
+        )));
+
+        // https://stackoverflow.com/a/41152103/437550
+        StaticFilesConfiguration staticHandler = new StaticFilesConfiguration();
+        staticHandler.configure("/web");
+        service.before((request, response) ->
+                staticHandler.consume(request.raw(), response.raw()));
+
+        service.get("/admin/api/poll", (request, response) -> {
+            int start = Integer.parseInt(request.queryParamOrDefault("start", "-50"));
+            int end = Integer.parseInt(request.queryParamOrDefault("end", "0"));
+
+            JsonObject responseObject = new JsonObject();
+            responseObject.add("log", generateLogObject(start, end));
+            return responseObject.toString();
+        });
+
+        service.get("/admin/api/command", (request, response) -> {
+            String command = request.queryParams("cmd");
+            if (command != null && command.trim().length() != 0) {
+                Logger.handleCommand(command);
+            }
+
+            JsonObject responseObject = new JsonObject();
+            responseObject.addProperty("success", true);
+
+            if (request.queryParams().contains("log")) {
+                int start = Integer.parseInt(request.queryParams("log"));
+                responseObject.add("log", generateLogObject(start, -1));
+            }
+
+            return responseObject.toString();
+        });
     }
 
-    @Override
-    public boolean authenticateCredentials(String username, String password) {
-        return username.equals(Main.config.web_interface_username) && password.equals(Main.config.web_interface_password);
-    }
-
-    @Override
-    public Response serve(IHTTPSession session) {
-        if(!requireAuthentication(session))
-            return generateAuthenticationResponse();
-
-        try {
-            /* STATIC */
-            if (session.getUri().equalsIgnoreCase("/")) {
-                InputStream is = getClass().getClassLoader().getResourceAsStream("web/index.html");
-                return newFixedLengthResponse(Response.Status.OK, "text/html", Util.inputStreamToString(is, "UTF-8"));
-            }
-            if (session.getUri().equalsIgnoreCase("/style.css")) {
-                InputStream is = getClass().getClassLoader().getResourceAsStream("web/style.css");
-                return newFixedLengthResponse(Response.Status.OK, "text/css", Util.inputStreamToString(is, "UTF-8"));
-            }
-            if (session.getUri().equalsIgnoreCase("/script.js")) {
-                InputStream is = getClass().getClassLoader().getResourceAsStream("web/script.js");
-                return newFixedLengthResponse(Response.Status.OK, "text/javascript", Util.inputStreamToString(is, "UTF-8"));
-            }
-
-            /* DYNAMIC */
-            if (session.getUri().equalsIgnoreCase("/api/poll")) {
-                try {
-                    int start = -50;
-                    if (session.getParms().containsKey("start"))
-                        start = Integer.parseInt(session.getParms().get("start"));
-                    int end = -1;
-                    if (session.getParms().containsKey("end"))
-                        end = Integer.parseInt(session.getParms().get("end"));
-
-                    JsonObject responseObject = new JsonObject();
-                    responseObject.add("log", generateLogObject(start, end));
-                    return newFixedLengthResponse(responseObject.toString());
-                } catch (NumberFormatException e) {
-                }
-            }
-            if (session.getUri().equalsIgnoreCase("/api/command")) {
-                String command = session.getParms().get("cmd");
-                if(command != null && command.trim().length() != 0)
-                    Logger.handleCommand(command);
-
-                JsonObject responseObject = new JsonObject();
-                responseObject.addProperty("success", true);
-
-                if (session.getParms().containsKey("log")) {
-                    int start = Integer.parseInt(session.getParms().get("log"));
-                    responseObject.add("log", generateLogObject(start, -1));
-                }
-
-                return newFixedLengthResponse(responseObject.toString());
-            }
-
-            return newFixedLengthResponse(Response.Status.NOT_FOUND, "text/html", "<h1>404 Not Found</h1>");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return newFixedLengthResponse(Response.Status.INTERNAL_ERROR, "text/html", "<h1>500 Server Error</h1>" + e.getMessage());
-        }
-    }
-
-    private JsonObject generateLogObject(int start, int end) {
-        if(start < 0) {
+    private static JsonObject generateLogObject(int start, int end) {
+        if (start < 0) {
             start = Math.max(0, start + Logger.logHistory.size());
         }
 

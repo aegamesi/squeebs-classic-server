@@ -18,8 +18,13 @@ public class Logger {
     public static final List<String> logHistory = new ArrayList<String>();
 
 
-    public static void init(String filename) {
+    public static void init(String basedir) {
         try {
+            String filename = "log.txt";
+            if (basedir != null) {
+                filename = basedir + "/log.txt";
+            }
+
             logWriter = new PrintWriter(new BufferedWriter(new FileWriter(filename, true)));
 
         } catch (IOException e) {

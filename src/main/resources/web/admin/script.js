@@ -7,7 +7,7 @@ $(document).ready(function() {
 	var last_lines = [];
 
 	(function pollServer() {
-		$.getJSON('/api/poll', {start: log_start}, function (response) {
+		$.getJSON('/admin/api/poll', {start: log_start}, function (response) {
 			if(log_start < 0) {
 				// clear log filler text on the first time
 				$("#log_inner").html("");
@@ -44,7 +44,7 @@ $(document).ready(function() {
 	$('#load_more').click(function (e) {
 		var start = log_beginning - load_more;
 		start = Math.max(0, start);
-		$.getJSON('/api/poll', {start: start, end: log_beginning}, function (response) {
+		$.getJSON('/admin/api/poll', {start: start, end: log_beginning}, function (response) {
 			log_beginning = response.log.beginning;
 			log_inner_elem = $("#log_inner");
 			for(var i = response.log.count - 1; i >= 0; i--) {
@@ -81,7 +81,7 @@ $(document).ready(function() {
 		last_lines.push(command);
 		last_index = last_lines.length;
 
-		$.getJSON('/api/command', {cmd: command, log: log_start}, function(response) {
+		$.getJSON('/admin/api/command', {cmd: command, log: log_start}, function(response) {
 			handleLog(response.log);
 
 			$("#input-status").hide();
